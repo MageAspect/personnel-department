@@ -17,7 +17,15 @@
 </head>
 <body class="font-sans h-100%">
 <div id="app" class="h-100%">
-    @yield('content')
+    <div class="flex flex-col h-100%">
+        <div class="flex justify-between px-6 py-8 bg-oceanic">
+            <div class="font-medium tracking-wide text-xl text-gray-light">
+                Отдел кадров
+            </div>
+            <x-auth-menu></x-auth-menu>
+        </div>
+        @yield('content')
+    </div>
 </div>
 
 <script src="/js/app.js"></script>

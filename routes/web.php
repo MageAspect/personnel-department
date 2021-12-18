@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('auth');
-});
+Route::get('/', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login-process', [App\Http\Controllers\AuthController::class, 'processLoginForm'])->name('login.process');
+
+Route::get('/forgot-password', [App\Http\Controllers\AuthController::class, 'showForgotPasswordForm'])->name('forgot-password');
+Route::post('/forgot-password-process', [App\Http\Controllers\AuthController::class, 'processForgotPasswordForm'])->name('forgot-password-process');
+
+
+Route::get('/departments', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('home');
