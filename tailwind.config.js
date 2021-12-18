@@ -6,25 +6,35 @@ module.exports = {
         './resources/**/*.vue',
     ],
     theme: {
-        fontSize: {
-            'xs': '.75rem',
-            'sm': '.875rem',
-            'tiny': '.875rem',
-            'base': '1rem',
-            'lg': '1.125rem',
-            'xl': '1.25rem',
-            '2xl': '1.5rem',
-            '3xl': '1.875rem',
-            '4xl': '2.25rem',
-            '5xl': '3rem',
-            '6xl': '4rem',
-            '7xl': '5rem',
-            'html-base': '16px',
-            'html-tiny': '14px',
-            'html-sm': '12px',
-            'html-xs': '10px',
+        colors: {
+            'oceanic': '#212936',
+            'oceanic-light': '#2b3648',
+            'gray': '#8490a2',
+            'gray-light': '#afbdd1',
+            'white': '#ffffff',
+            'red': '#d46363',
+            'blue': '#1976d2',
+            'blue-dark': '#11508e',
+            'green': '#4caf50'
         },
-        extend: {},
+        fontFamily: {
+            'sans': ['Roboto', 'sans-serif']
+        },
+        extend: {
+            fontSize: {
+                'html-base': '16px',
+                'html-tiny': '14px',
+                'html-sm': '12px',
+                'html-xs': '10px',
+            },
+            padding: {
+                '18': '4.5rem',
+            },
+            height: {
+                'full-screen': '100vh',
+                '100%': '100%',
+            }
+        },
     },
     plugins: [],
 }

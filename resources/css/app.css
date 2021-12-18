@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input {
+    outline: none;
+    display: block;
+    width: 100%;
+}
+
+a {
+    display: block;
+}
