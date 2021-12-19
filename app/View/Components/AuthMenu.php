@@ -26,7 +26,7 @@ class AuthMenu extends Component
     {
         return view(
             'components.auth-menu',
-            ['currentRouteIsLogin' => request()->routeIs('login')]
+            ['currentRouteIsLogin' => request()->routeIs('auth.login')]
         );
     }
 }

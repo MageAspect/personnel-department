@@ -12,13 +12,13 @@
         <div class="max-w-xl bg-oceanic py-12 w-96">
             <div class="border-l-2 border-blue px-16 flex items-center justify-between h-12">
                 <span class="text-gray-light font-bold">ВХОД</span>
-                <a href="{{ route('forgot-password') }}" class="
+                <a href="{{ route('auth.forgot-password') }}" class="
                         text-gray text-sm transition hover:text-gray-light
                     ">
                     забыли пароль?
                 </a>
             </div>
-            <form class="px-16" action="{{ route('login.process') }}" method="post">
+            <form class="px-16" action="{{ route('auth.login-process') }}" method="post">
                 @csrf
 
                 <div class="mt-12 ">

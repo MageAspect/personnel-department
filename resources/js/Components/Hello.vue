@@ -1,5 +1,5 @@
 <template>
-  <h1 class="text-center ">{{hello}}</h1>
+  <h1 class="text-center text-sm">{{hello}}</h1>
 </template>
 
 <script>

@@ -5,7 +5,7 @@
  */
 ?>
 
-@extends('auth')
+@extends('layouts.auth')
 
 @section('content')
     <div class="flex justify-center items-center grow">
@@ -17,7 +17,7 @@
                 <div class="px-16 text-base text-gray mt-8 tracking-wide">
                     Мы отправим ссылку для восстановления на адрес
                 </div>
-                <form class="px-16" action="{{ route('forgot-password-process') }}" method="post">
+                <form class="px-16" action="{{ route('auth.forgot-password-process') }}" method="post">
                     @csrf
                     <div class="mt-8">
                         <input class="
@@ -38,6 +38,9 @@
                             ОТПРАВИТЬ
                         </button>
                     </div>
+                    @error('reset')
+                    <div class="mt-10 text-sm text-red text-center">{{ $message }}</div>
+                    @enderror
                 </form>
             @else
                 <div class="px-16 text-base text-green mt-8 tracking-wide">
