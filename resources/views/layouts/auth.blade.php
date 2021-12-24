@@ -1,6 +1,6 @@
 <?php
 /**
- * @author Mark Prohorov <mark.proxorofff@gmail.com>
+ * @author mosowell https://github.com/mosowell
  */
 ?>
 

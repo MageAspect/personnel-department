@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Mark Prohorov <mark.proxorofff@gmail.com>
+ * @author mosowell https://github.com/mosowell
  */
 ?>
 
@@ -16,10 +16,13 @@
             <form class="px-16" action="{{ route('auth.reset-password-process') }}" method="post">
                 @csrf
                 <div class="mt-12">
-                    <input class="
-                                bg-oceanic pt-3 pb-2 text-gray-light
-                                border-b border-gray-light text-base @error('password') border-red @enderror
-                        " id="password" type="password" name="password" placeholder="Новый пароль"
+                    <input class="bg-oceanic pt-3 pb-2 text-gray-light
+                                border-b border-gray-light text-base
+                                @error('password') border-red @enderror"
+                           id="password"
+                           type="password"
+                           name="password"
+                           placeholder="Новый пароль"
                            value="{{ old('password') }}">
                     @error('password')
                     <div class="mt-4 text-sm text-red ">{{ $message }}</div>
@@ -28,21 +31,21 @@
                 <input type="hidden" name="token" value="{{ $token ?? ''  }}">
                 <input type="hidden" name="email" value="{{ $email ?? ''  }}">
                 <div class="mt-12">
-                    <input class="
-                                bg-oceanic pt-3 pb-2 text-gray-light
-                                border-b border-gray-light text-base @error('password_confirmed') border-red @enderror
-                        " id="password" type="password" name="password_confirmation"
+                    <input class="bg-oceanic pt-3 pb-2 text-gray-light
+                                border-b border-gray-light text-base
+                                @error('password_confirmed') border-red @enderror"
+                           id="password"
+                           type="password"
+                           name="password_confirmation"
                            placeholder="Новый пароль ещё раз">
                     @error('password_confirmation')
                     <div class="mt-4 text-sm text-red ">{{ $message }}</div>
                     @enderror
                 </div>
-
                 <div class="mt-16 flex justify-center">
-                    <button class="
-                            border-2 border-blue transition text-sm
-                            text-center px-12 py-4 text-blue
-                            hover:text-gray-light hover:bg-blue"
+                    <button class="border-2 border-blue transition text-sm
+                                text-center px-12 py-4 text-blue
+                                hover:text-gray-light hover:bg-blue"
                             type="submit">
                         ВОССТАНОВИТЬ
                     </button>

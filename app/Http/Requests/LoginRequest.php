@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+
 class LoginRequest extends FormRequest
 {
     /**
@@ -29,7 +30,8 @@ class LoginRequest extends FormRequest
         ];
     }
 
-    public function messages() {
+    public function messages()
+    {
         return [
             'email.required' => 'Email обязателен для заполнения',
             'email.email' => 'Email имеет неверный формат',

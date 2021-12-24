@@ -6,13 +6,11 @@ use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Jobs\SendResetPasswordLink;
-use App\Mail\ForgotPasswordMail;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -98,7 +96,7 @@ class AuthController extends Controller
             }
         );
 
-        if ($status = Password::PASSWORD_RESET) {
+        if ($status == Password::PASSWORD_RESET) {
             return redirect()->route('auth.reset-password-success');
         }
 
