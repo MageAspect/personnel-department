@@ -5,7 +5,7 @@
 ?>
 
     <!doctype html>
-<html lang="{{str_replace('_', '-', app()->getLocale())}}" class="text-html-base bg-oceanic-light h-full-screen">
+<html lang="{{str_replace('_', '-', app()->getLocale())}}" class="text-html-base bg-oceanic-light h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -15,11 +15,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/app.css">
 </head>
-<body class="font-sans h-100%">
-<div id="app" class="h-100%">
-    <div class="flex flex-col h-100%">
-        <div class="flex justify-between px-6 py-8 bg-oceanic">
-            <div class="font-medium tracking-wide text-xl text-gray-light">
+<body class="font-sans h-full">
+<div id="app" class="h-full">
+    <div class="flex flex-col h-full">
+        <div class="flex justify-between px-5 py-4 bg-oceanic">
+            <div class="py-2 font-medium tracking-wide text-xl text-gray-light">
                 Отдел кадров
             </div>
             <x-auth-menu></x-auth-menu>

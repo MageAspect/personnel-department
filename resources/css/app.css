@@ -2,20 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
-input {
-    outline: none;
-    display: block;
-    width: 100%;
+@layer base {
+    input {
+        outline: none !important;
+        display: block;
+        width: 100%;
+    }
+
+    a {
+        display: block;
+    }
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        transition-delay: 99999s;
+        transition-property: background-color, color;
+    }
 }
 
-a {
-    display: block;
-}
+@layer components {
+    .btn {
+        @apply block text-center p-3 rounded-sm transition uppercase text-xs;
+        letter-spacing: 0.1rem;
+    }
 
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-    transition-delay: 99999s;
-    transition-property: background-color, color;
+    .btn:hover {
+        box-shadow: 0 1px 10px rgba(0, 0, 0, 0.2), 0 4px 5px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14);
+    }
+
+    .btn-primary {
+        @apply text-white bg-blue
+    }
+
+    .btn-primary > i {
+        @apply mr-2
+    }
+
+    .btn-success {
+        @apply text-white bg-green
+    }
+
+    .btn-light {
+        @apply text-gray hover:text-blue;
+    }
+
+    .ui-y-scroll {
+        overflow-y: scroll;
+    }
+    .ui-x-scroll {
+        overflow-x: scroll;
+    }
+    .ui-y-scroll::-webkit-scrollbar, .ui-x-scroll::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    .ui-y-scroll::-webkit-scrollbar-track, .ui-x-scroll::-webkit-scrollbar-track {
+        background: none;
+    }
+
+    .ui-y-scroll::-webkit-scrollbar-thumb, .ui-x-scroll::-webkit-scrollbar-thumb {
+        @apply bg-blue;
+        border-radius: 20px;
+    }
+
+    .link-gray-light {
+        @apply transition text-gray-light hover:text-gray-lightest
+    }
 }

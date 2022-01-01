@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DepartmentController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -47,4 +48,7 @@ Route::post(
     [App\Http\Controllers\AuthController::class, 'processResetPasswordForm']
 )->name('auth.reset-password-process');
 
-Route::get('/departments', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('home');
+Route::middleware(['auth'])->group(function () {
+    Route::resource('departments', DepartmentController::class);
+});
+
