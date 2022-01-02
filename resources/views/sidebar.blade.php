@@ -19,7 +19,7 @@
     <div class="px-3 pb-5">
         <div class="border-b border-oceanic-light py-3">
             <div class="pl-2 text-gray-light text-gray-dark opacity-50 text-3.5">Главное меню</div>
-            <a href="/departments/" class="p-2 mt-3 flex items-center rounded
+            <a href="{{ route('departments.index') }}" class="p-2 mt-3 flex items-center rounded
                                         text-gray-dark text-sm font-medium transition
                                         hover:bg-oceanic-light hover:text-blue">
                 <div class="shrink-0 mr-5">
@@ -27,7 +27,7 @@
                 </div>
                 <div class="">Отделы</div>
             </a>
-            <a href="/departments/" class="p-2 mt-3 flex items-center rounded
+            <a href="{{ route('users.index') }}" class="p-2 mt-3 flex items-center rounded
                                         text-gray-dark text-sm font-medium transition
                                         hover:bg-oceanic-light hover:text-blue">
                 <div class="shrink-0 mr-5">

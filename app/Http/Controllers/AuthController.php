@@ -27,7 +27,7 @@ class AuthController extends Controller
         $data = $request->validated();
 
         if (auth('web')->attempt($data)) {
-            return redirect(route('departments'));
+            return redirect(route('departments.index'));
         }
 
         return back()->withErrors([

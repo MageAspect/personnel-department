@@ -241,9 +241,7 @@
                     </div>
                 </div>
                 <div class="text-base leading-5 text-gray-lighter">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias
-                    atque earum est ex id iusto, libero magni neque non odio, placeat, quibusdam quos temporibus!sto, libero
-                    magni neque non odio, placeat, quibusdam quos temporibus!sto, libero magni neque non odio, placeat,
-                    quibusdam quos temporodio, placeat, quibusdam quos temporibus!
+                    atque earum est ex id iusto, libero ma
                 </div>
             </div>
             <div class="bg-oceanic-light p-1 flex justify-between text-2xs text-white ">

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -50,5 +51,10 @@ Route::post(
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('departments', DepartmentController::class);
+    Route::resource('users', UserController::class);
+});
+
+Route::middleware(['auth'])->prefix('/admin')->group(function () {
+//    Route::get('/sql-query', )
 });
 

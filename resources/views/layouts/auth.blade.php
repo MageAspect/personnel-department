@@ -13,7 +13,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>{{env('APP_NAME')}}</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
 </head>
 <body class="font-sans h-full">
 <div id="app" class="h-full">
@@ -28,6 +28,6 @@
     </div>
 </div>
 
-<script src="/js/app.js"></script>
+<script src="{{ mix('/js/app.js') }}"></script>
 </body>
 </html>

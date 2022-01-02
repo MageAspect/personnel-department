@@ -9,6 +9,7 @@ module.exports = {
         colors: {
             'oceanic': '#212936',
             'oceanic-light': '#2b3648',
+            'oceanic-lighter': '#455369',
             'gray-dark': '#7283a0',
             'gray': '#8490a2',
             'gray-light': '#afbdd1',
@@ -40,13 +41,21 @@ module.exports = {
             },
             padding: {
                 '18': '4.5rem',
+                '1.25': '0.3125rem',
+            },
+            margin: {
+                '18': '4.5rem'
             },
             height: {
                 'full-screen': '100vh',
                 'inherit': 'inherit',
-                '13': '3.25rem'
+                '13': '3.25rem',
+            },
+            maxHeight: {
+                '70': '17.5rem',
             },
             width: {
+                'full-screen': '100vw',
                 'inherit': 'inherit',
                 '13': '3.25rem'
             },
@@ -58,6 +67,10 @@ module.exports = {
             },
             gridTemplateColumns: {
                 'departments': 'repeat(auto-fill, 23rem)'
+            },
+            backgroundColor: {
+                'unset': 'unset',
+                'popup': 'rgba(0, 0, 0, 0.35)'
             }
         },
     },

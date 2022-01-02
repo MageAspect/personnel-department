@@ -20,11 +20,16 @@
         transition-delay: 99999s;
         transition-property: background-color, color;
     }
+
+    textarea {
+        outline: none !important;
+        resize: none;
+    }
 }
 
 @layer components {
     .btn {
-        @apply block text-center p-3 rounded-sm transition uppercase text-xs;
+        @apply block text-center p-3 rounded-sm transition uppercase text-xs cursor-pointer;
         letter-spacing: 0.1rem;
     }
 
@@ -46,6 +51,21 @@
 
     .btn-light {
         @apply text-gray hover:text-blue;
+    }
+
+    .btn-light-add {
+        @apply text-2xs p-2 text-gray-dark hover:text-blue;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-light-success {
+        @apply text-2xs p-2 text-gray-dark hover:text-green;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-light-delete {
+        @apply text-2xs p-2 text-gray-dark hover:text-red;
+        letter-spacing: 0.05em;
     }
 
     .ui-y-scroll {
@@ -70,5 +90,14 @@
 
     .link-gray-light {
         @apply transition text-gray-light hover:text-gray-lightest
+    }
+
+    .grid-col-users-list {
+        grid-template-columns: max-content max-content max-content max-content min-content auto;
+    }
+
+    .grid-rows-delimiter {
+        @apply col-span-full border-b border-oceanic-lighter;
+
     }
 }

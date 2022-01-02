@@ -1,11 +1,12 @@
-import Hello from "./Components/Hello.vue";
-import UIButton from "./Components/UIButton.vue";
-
+import Vue from "vue";
+import UserSelectorPopup from "./Components/UserSelectorPopup.vue";
+import UserPreview from "./Components/UserPreview.vue";
+import UserPreviewInGrid from "./Components/UserPreviewInGrid.vue";
 require('./bootstrap');
+Vue.component(UserPreview.name, UserPreview);
+Vue.component(UserPreviewInGrid.name, UserPreviewInGrid);
+Vue.component(UserSelectorPopup.name, UserSelectorPopup);
+new Vue({el: '#app'});
 
-import {createApp} from "vue";
-const app = createApp({});
 
-app.component('component-hello', Hello);
-app.component('ui-button', UIButton);
-app.mount('#app')
+
