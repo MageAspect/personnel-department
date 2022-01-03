@@ -1,21 +1,19 @@
 <template>
     <div class="contents">
-        <div class="contents">
-            <user-preview :name="name"
-                          :lastName="lastName"
-                          :position="position"
-                          :email="email"
-                          :phone="phone"
-                          :profileLink="profileLink"
-                          :avatarPath="avatarPath"
-            ></user-preview>
-            <div class="pl-3 pt-1">
-                <div @click="$emit('selectUser', id)" :class="[actionButtonClass, 'btn']">{{ actionButtonText }}</div>
-            </div>
-            <div></div>
+        <user-preview :name="name"
+                      :lastName="lastName"
+                      :position="position"
+                      :email="email"
+                      :phone="phone"
+                      :profileLink="profileLink"
+                      :avatarPath="avatarPath"
+        ></user-preview>
+        <div class="pl-3 pt-1">
+            <div @click="$emit('selectUser', id)" :class="[actionButtonClass, 'btn']">{{ actionButtonText }}</div>
         </div>
-        <div class="grid-rows-delimiter"></div>
+        <div></div>
     </div>
+    <div class="grid-rows-delimiter"></div>
 </template>
 
 <script>

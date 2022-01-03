@@ -1,12 +1,15 @@
-import Vue from "vue";
-import UserSelectorPopup from "./Components/UserSelectorPopup.vue";
+
+import {createApp} from "vue";
 import UserPreview from "./Components/UserPreview.vue";
 import UserPreviewInGrid from "./Components/UserPreviewInGrid.vue";
-require('./bootstrap');
-Vue.component(UserPreview.name, UserPreview);
-Vue.component(UserPreviewInGrid.name, UserPreviewInGrid);
-Vue.component(UserSelectorPopup.name, UserSelectorPopup);
-new Vue({el: '#app'});
+import UserSelectorPopup from "./Components/UserSelectorPopup.vue";
 
+require('./bootstrap');
+
+const app = createApp({});
+app.component(UserPreview.name, UserPreview);
+app.component(UserPreviewInGrid.name, UserPreviewInGrid);
+app.component(UserSelectorPopup.name, UserSelectorPopup);
+app.mount('#app')
 
 

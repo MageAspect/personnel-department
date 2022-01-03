@@ -39,6 +39,7 @@ export default {
                 return;
             }
 
+            window.removeEventListener('keydown', this.close);
             this.show = false
         }
     },
@@ -51,6 +52,3 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
