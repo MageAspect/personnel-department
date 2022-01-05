@@ -15,4 +15,19 @@ class DepartmentController extends Controller
     public function edit(int $id) {
         return view('departments.edit');
     }
+
+
+    public function update(Request $request, $id)
+    {
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        return response()->json([
+            'success' => true
+        ]);
+    }
 }

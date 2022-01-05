@@ -5,8 +5,8 @@
     </div>
 
     <div class="ml-4 font-medium">
-        <a :href=profileLink class="mb-1 link-gray-light text-base">{{ fullName }}</a>
-        <div class="text-gray text-xs">{{ position }}</div>
+        <a :href="user.profileLink" class="mb-1 link-gray-light text-base">{{ fullName }}</a>
+        <div class="text-gray text-xs">{{ user.position }}</div>
     </div>
 
     <div class="font-medium ml-18">
@@ -15,31 +15,27 @@
     </div>
 
     <div class="font-medium ml-18">
-        <div class="mb-1 text-gray-lighter text-sm">{{ phone }}</div>
-        <div class="mb-1 text-gray-lighter text-sm">{{ email }}</div>
+        <div class="mb-1 text-gray-lighter text-sm">{{ user.phone }}</div>
+        <div class="mb-1 text-gray-lighter text-sm">{{ user.email }}</div>
     </div>
 </template>
 
 <script>
+import {User} from "./User.js";
+
 export default {
-    name: "user-preview",
+    name: "user-preview-body",
     props: {
-        name: String,
-        lastName: String,
-        profileLink: String,
-        avatarPath: String,
-        position: String,
-        email: String,
-        phone: String,
+        user: User,
     },
     computed: {
         avatarStyles: function () {
             return {
-                backgroundImage: `url('${this.avatarPath}')`
+                backgroundImage: `url('${this.user.avatarPath}')`
             };
         },
         fullName: function () {
-            return `${this.lastName} ${this.name}`;
+            return `${this.user.lastName} ${this.user.name}`;
         },
     }
 }
