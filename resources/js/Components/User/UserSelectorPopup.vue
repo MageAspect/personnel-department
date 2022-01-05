@@ -47,8 +47,8 @@ export default {
             this.closePopupTrigger();
         },
 
-        userSelected(id) {
-            this.$emit('selectUser', id);
+        userSelected(user) {
+            this.$emit('selectUser', user);
             this.closePopupTrigger()
         }
     },

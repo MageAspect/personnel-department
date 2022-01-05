@@ -15,6 +15,7 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=cyrillic"
           rel="stylesheet">
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
 </head>
 <body class="font-sans h-full">
 <div id="app" class="h-full">

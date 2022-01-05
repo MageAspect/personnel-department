@@ -1,5 +1,5 @@
 <template>
-    <page-edit-header v-model="department.name">
+    <page-header v-model:title-input="department.name" title="Редактирование:">
         <template v-slot:icon>
             <i class="fas fa-layer-group"></i>
         </template>
@@ -7,11 +7,11 @@
             <a href="/" class="btn btn-light mr-4">
                 <span>К списку</span>
             </a>
-            <button @click="saveDepartment()" class="btn btn-success">
+            <button @click.prevent="saveDepartment()" class="btn btn-success">
                 <span>Сохранить</span>
             </button>
         </template>
-    </page-edit-header>
+    </page-header>
     <div class="p-6 pb-0">
         <div class="bg-oceanic-light p-6">
             <div class="flex mb-6">
@@ -19,7 +19,7 @@
                 <div @click="openHeadSelectorPopup()" class="btn btn-light-success">Изменить</div>
                 <user-selector-popup v-if="isHeadSelectorPopupOpened()"
                                      :close-popup-trigger="closeHeadSelectorPopup"
-                                     @select-user="">
+                                     @select-user="(user) => this.department.head = user">
                 </user-selector-popup>
             </div>
             <div class="pb-6 border-b border-oceanic-lighter">
@@ -62,19 +62,19 @@ import UserSelectorPopup from "../User/UserSelectorPopup.vue";
 import UserPreviewInGrid from "../User/UserPreviewInGrid.vue";
 import UserPreview from "../User/UserPreview.vue";
 import {User} from "../User/User.js";
-import PageEditHeader from "../PageEditHeader.vue";
+import PageHeader from "../PageHeader.vue";
+import {validationMixin} from "vuelidate";
 
 export default {
     name: "department-edit",
-    components: {PageEditHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
-
+    components: {PageHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
+    mixins: [validationMixin],
     props: {
         id: Number,
         name: String,
         description: String,
         headId: Number,
         membersIds: Array,
-        token: String,
         storeUrl: String,
         updateUrl: String,
     },
@@ -155,7 +155,6 @@ export default {
                     membersIds: membersIds,
                     name: this.department.name,
                     description: this.department.description,
-                    _token: this.token
                 }
             })
                 .then(() => location.reload())
