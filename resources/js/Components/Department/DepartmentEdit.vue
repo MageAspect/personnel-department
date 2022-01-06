@@ -16,7 +16,10 @@
                 message="Название должно быть заполнено">
             </error>
             <error v-else-if="v$.department.name.$dirty && v$.department.name.minLength.$invalid"
-                   message="Название должно должно содержать минимум 3 символа">
+                   message="Название должно содержать минимум 3 символа">
+            </error>
+            <error v-else-if="v$.department.name.$dirty && v$.department.name.maxLength.$invalid"
+                   message="Название должно должно превышать 100 символов">
             </error>
         </template>
     </page-header>
@@ -52,6 +55,9 @@
             <error v-else-if="v$.department.description.$dirty && v$.department.description.minLength.$invalid"
                    message="Описание должно содержать минимум 20 символов">
             </error>
+            <error v-else-if="v$.department.description.$dirty && v$.department.description.maxLength.$invalid"
+                   message="Описание не должно превышать 1000 символов">
+            </error>
         </div>
 
         <div class="bg-oceanic-light p-6 pb-0 mt-6">
@@ -83,7 +89,7 @@ import UserPreview from "../User/UserPreview.vue";
 import {User} from "../User/User.js";
 import PageHeader from "../PageHeader.vue";
 import useVuelidate from '@vuelidate/core'
-import { required, minLength } from '@vuelidate/validators'
+import {required, minLength, maxLength} from '@vuelidate/validators'
 import Error from "./Error.vue";
 
 export default {
@@ -133,8 +139,16 @@ export default {
         return {
             department: {
                 head: {required},
-                name: {required, minLength: minLength(3)},
-                description: {required, minLength: minLength(20)},
+                name: {
+                    required,
+                    minLength: minLength(3),
+                    maxLength: maxLength(100)
+                },
+                description: {
+                    required,
+                    minLength: minLength(20),
+                    maxLength: maxLength(1000)
+                },
             }
         };
     },

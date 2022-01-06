@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use Illuminate\Http\Request;
 
 
@@ -9,7 +10,9 @@ class DepartmentController extends Controller
 {
     public function index()
     {
-        return view('departments.list');
+        $departments = Department::query()->paginate(8);
+
+        return view('departments.list', ['departments' => $departments]);
     }
 
     public function edit(int $id) {

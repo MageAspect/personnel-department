@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
 
@@ -24,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
+        Blade::directive('avatar', function ($path = null) {
+            return "<?php echo \"background-image: url('\" . (" . $path . " ?:  '/img/user/user-plug.svg') . \"')\" ?>";
+        });
     }
 }
