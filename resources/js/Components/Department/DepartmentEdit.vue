@@ -11,8 +11,18 @@
                 <span>Сохранить</span>
             </button>
         </template>
+        <template v-slot:input-error>
+            <error v-if="v$.department.name.$dirty && v$.department.name.required.$invalid"
+                message="Название должно быть заполнено">
+            </error>
+            <error v-else-if="v$.department.name.$dirty && v$.department.name.minLength.$invalid"
+                   message="Название должно должно содержать минимум 3 символа">
+            </error>
+        </template>
     </page-header>
     <div class="p-6 pb-0">
+        <error v-if="saveError" :message="saveError"></error>
+
         <div class="bg-oceanic-light p-6">
             <div class="flex mb-6">
                 <div class="tracking-wider text-gray-light text-xl mr-3">Руководитель отдела</div>
@@ -23,9 +33,12 @@
                 </user-selector-popup>
             </div>
             <div class="pb-6 border-b border-oceanic-lighter">
-                <user-preview :user="department.head"
+                <user-preview v-if="department.head" :user="department.head"
                 ></user-preview>
             </div>
+            <error v-if="v$.department.head.$dirty && v$.department.head.required.$invalid"
+                   message="Руководитель отдела должен быть заполнен">
+            </error>
         </div>
         <div class="bg-oceanic-light p-6 mt-6">
             <div class="tracking-wider flex items-center text-gray-light text-xl mb-6">Описание</div>
@@ -33,6 +46,12 @@
                       rows="4"
                       class="p-3 text-gray bg-unset border border-blue-dark w-full ui-y-scroll">
             </textarea>
+            <error v-if="v$.department.description.$dirty && v$.department.description.required.$invalid"
+                   message="Описание отдела обязательно для заполнения">
+            </error>
+            <error v-else-if="v$.department.description.$dirty && v$.department.description.minLength.$invalid"
+                   message="Описание должно содержать минимум 20 символов">
+            </error>
         </div>
 
         <div class="bg-oceanic-light p-6 pb-0 mt-6">
@@ -63,12 +82,13 @@ import UserPreviewInGrid from "../User/UserPreviewInGrid.vue";
 import UserPreview from "../User/UserPreview.vue";
 import {User} from "../User/User.js";
 import PageHeader from "../PageHeader.vue";
-import {validationMixin} from "vuelidate";
+import useVuelidate from '@vuelidate/core'
+import { required, minLength } from '@vuelidate/validators'
+import Error from "./Error.vue";
 
 export default {
     name: "department-edit",
-    components: {PageHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
-    mixins: [validationMixin],
+    components: {Error, PageHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
     props: {
         id: Number,
         name: String,
@@ -78,7 +98,9 @@ export default {
         storeUrl: String,
         updateUrl: String,
     },
-
+    setup () {
+        return { v$: useVuelidate() }
+    },
     data() {
         let members = [];
         members.push(new User());
@@ -87,7 +109,7 @@ export default {
             id: this.id,
             name: this.name,
             description: this.description,
-            head: new User(),
+            head: null,
             members: members,
         }
 
@@ -103,8 +125,20 @@ export default {
                 excludeUsers: [],
                 search: ''
             },
+            saveError: ''
         }
     },
+
+    validations () {
+        return {
+            department: {
+                head: {required},
+                name: {required, minLength: minLength(3)},
+                description: {required, minLength: minLength(20)},
+            }
+        };
+    },
+
     methods: {
         /**
          * @param {string} search
@@ -143,6 +177,11 @@ export default {
         },
 
         saveDepartment() {
+            this.v$.department.$touch();
+            if (this.v$.$error) {
+                return;
+            }
+
             let membersIds = this.department.members.map((member) => member.id);
             let httpMethod = this.department.id > 0 ? 'put' : 'post';
             let url = this.department.id > 0 ? this.updateUrl : this.storeUrl;
@@ -158,8 +197,8 @@ export default {
                 }
             })
                 .then(() => location.reload())
-                .catch((error) => {
-                    console.log(error)
+                .catch((res) => {
+                    this.saveError = res.errorMess;
                 })
         }
     }
