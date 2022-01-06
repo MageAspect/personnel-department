@@ -33,4 +33,9 @@ class DepartmentController extends Controller
             'success' => true
         ]);
     }
+
+    public function destroy($id) {
+        Department::query()->where('id', $id)->delete();
+        return back();
+    }
 }
