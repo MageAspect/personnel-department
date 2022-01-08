@@ -66,16 +66,24 @@ use App\Personnel\DepartmentEntry;
                         {{ $department->description }}
                     </div>
                 </div>
-                <div class="bg-oceanic-light p-1 flex justify-between text-2xs text-white ">
-                    <a href="{{ route('departments.edit', ['department' => $department->id]) }}"
-                       class="p-2 uppercase font-medium hover:text-green transition">редактировать</a>
-                    <form action="{{ route('departments.destroy', ['department' => $department->id]) }}" method="post">
-                        @method('delete')
-                        @csrf
-                        <button type="submit" class="p-2 uppercase font-medium hover:text-red transition">Удалить
-                        </button>
-                    </form>
-                </div>
+                @if ($department->canEdit || $department->canDelete)
+                    <div class="bg-oceanic-light p-1 flex justify-between text-2xs text-white ">
+                        @if ($department->canEdit)
+                            <a href="{{ route('departments.edit', ['department' => $department->id]) }}"
+                               class="p-2 uppercase font-medium hover:text-green transition">редактировать</a>
+                        @endif
+                        @if ($department->canDelete)
+                            <form action="{{ route('departments.destroy', ['department' => $department->id]) }}"
+                                  method="post">
+                                @method('delete')
+                                @csrf
+                                <button type="submit" class="p-2 uppercase font-medium hover:text-red transition">
+                                    Удалить
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @endif
             </div>
         @endforeach
     </div>

@@ -46,7 +46,8 @@ class User extends Authenticatable
 
     public function departments()
     {
-        return $this->belongsToMany(Department::class, 'user_department');
+        return $this->belongsToMany(Department::class, 'user_department')
+            ->withPivot($this->getCreatedAtColumn());
     }
 
     public function isAdministrator(): bool
@@ -54,11 +55,27 @@ class User extends Authenticatable
         return (bool) $this->is_admin;
     }
 
-    public function getSalaryAttribute(): ?int {
-        if ($this->can('viewWorkFields', User::class)) {
-            return $this->getAttributes()['salary'];
-        }
+    public function canViewSalary(User $user): ?int
+    {
+        return $this->can('viewWorkFields', $user);
+    }
 
-        return null;
+    function scopeWithName($query, $name)
+    {
+        $names = explode(" ", $name);
+
+        $names[0] = !empty($names[0]) ? "%$names[0]%" : '%%';
+        $names[1] = !empty($names[1]) ? "%$names[1]%" : '%%';
+
+        return User::where(function ($query) use ($names) {
+            $query->orWhere(function ($query) use ($names) {
+                $query->where('name', 'ilike', $names[0]);
+                $query->where('last_name', 'ilike', $names[1]);
+            });
+            $query->orWhere(function ($query) use ($names) {
+                $query->where('last_name', 'ilike', $names[0]);
+                $query->where('name', 'ilike', $names[1]);
+            });
+        });
     }
 }

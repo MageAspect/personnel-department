@@ -11,9 +11,9 @@ class UserPolicy
     use HandlesAuthorization;
 
 
-    public function before(User $current, $ability): bool
+    public function before(User $current, $ability): ?bool
     {
-        return $current->isAdministrator();
+        return $current->isAdministrator() ?: null;
     }
 
     public function update(User $current, User $user): bool

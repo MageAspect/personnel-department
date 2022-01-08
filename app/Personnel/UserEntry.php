@@ -7,7 +7,7 @@
 namespace App\Personnel;
 
 
-use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
 
 
 class UserEntry
@@ -29,7 +29,7 @@ class UserEntry
         $this->id = $id;
     }
 
-    public static function fromModel(User $modelUser): UserEntry
+    public static function fromModel(Model $modelUser): UserEntry
     {
         $user = new UserEntry((int) $modelUser->id);
         $user->name = (string) $modelUser->name;

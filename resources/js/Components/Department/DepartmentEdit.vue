@@ -7,24 +7,30 @@
             <a :href="listUrl" class="btn btn-light mr-4">
                 <span>К списку</span>
             </a>
-            <button @click.prevent="saveDepartment()" class="btn btn-success">
+            <button :disabled="saveDisabled" class="btn btn-success" @click.prevent="saveDepartment()">
                 <span>Сохранить</span>
             </button>
         </template>
         <template v-slot:input-error>
             <error v-if="v$.department.name.$dirty && v$.department.name.required.$invalid"
-                message="Название должно быть заполнено">
+                   message="Название должно быть заполнено"
+                   margin-top
+            >
             </error>
             <error v-else-if="v$.department.name.$dirty && v$.department.name.minLength.$invalid"
-                   message="Название должно содержать минимум 3 символа">
+                   message="Название должно содержать минимум 3 символа"
+                   margin-top
+            >
             </error>
             <error v-else-if="v$.department.name.$dirty && v$.department.name.maxLength.$invalid"
-                   message="Название должно должно превышать 100 символов">
+                   message="Название должно должно превышать 100 символов"
+                   margin-top
+            >
             </error>
         </template>
     </page-header>
     <div class="p-6 pb-0">
-        <error v-if="saveError" :message="saveError"></error>
+        <error v-if="saveError" margin-bottom :message="saveError"></error>
 
         <div class="bg-oceanic-light p-6">
             <div class="flex mb-6">
@@ -32,7 +38,9 @@
                 <div @click="openHeadSelectorPopup()" class="btn btn-light-success">Изменить</div>
                 <user-selector-popup v-if="isHeadSelectorPopupOpened()"
                                      :close-popup-trigger="closeHeadSelectorPopup"
-                                     @select-user="(user) => this.department.head = user">
+                                     :find-users-url="findUsersUrl"
+                                     :excluded-ids="[department.head.id]"
+                                     @select-user="selectHead">
                 </user-selector-popup>
             </div>
             <div class="pb-6 border-b border-oceanic-lighter">
@@ -40,7 +48,9 @@
                 ></user-preview>
             </div>
             <error v-if="v$.department.head.$dirty && v$.department.head.required.$invalid"
-                   message="Руководитель отдела должен быть заполнен">
+                   message="Руководитель отдела должен быть заполнен"
+                   margin-top
+            >
             </error>
         </div>
         <div class="bg-oceanic-light p-6 mt-6">
@@ -50,19 +60,27 @@
                       class="p-3 text-gray bg-unset border border-blue-dark w-full ui-y-scroll">
             </textarea>
             <error v-if="v$.department.description.$dirty && v$.department.description.required.$invalid"
-                   message="Описание отдела обязательно для заполнения">
+                   message="Описание отдела обязательно для заполнения"
+                   margin-top
+            >
             </error>
             <error v-else-if="v$.department.description.$dirty && v$.department.description.minLength.$invalid"
-                   message="Описание должно содержать минимум 20 символов">
+                   message="Описание должно содержать минимум 20 символов"
+                   margin-top
+            >
             </error>
             <error v-else-if="v$.department.description.$dirty && v$.department.description.maxLength.$invalid"
-                   message="Описание не должно превышать 1000 символов">
+                   message="Описание не должно превышать 1000 символов"
+                   margin-top
+            >
             </error>
         </div>
 
         <div class="bg-oceanic-light p-6 pb-0 mt-6">
             <div class="flex">
-                <div class="mr-2 tracking-wider text-gray-light text-xl">Сотрудники ({{ department.members.length }})</div>
+                <div class="mr-2 tracking-wider text-gray-light text-xl">
+                    Сотрудники ({{ department.members.length }})
+                </div>
                 <div @click="openMemberSelectorPopup()" class="btn btn-light-add">
                     <i class="mr-1 fas fa-plus"></i>
                     <span class="">Добавить</span>
@@ -72,13 +90,16 @@
                 <user-preview-in-grid v-for="m of department.members" :user="m"
                                       action-button-text="Удалить"
                                       action-button-class="btn-light-delete"
+                                      @select-user="deleteMember"
                 ></user-preview-in-grid>
             </div>
         </div>
     </div>
     <user-selector-popup v-if="isMemberSelectorPopupOpened()"
                          :close-popup-trigger="closeMemberSelectorPopup"
-                         @select-user="">
+                         :find-users-url="findUsersUrl"
+                         :excluded-ids="department.members.map(user => user.id)"
+                         @select-user="addMember">
     </user-selector-popup>
 </template>
 
@@ -91,37 +112,108 @@ import PageHeader from "../PageHeader.vue";
 import useVuelidate from '@vuelidate/core'
 import {required, minLength, maxLength} from '@vuelidate/validators'
 import Error from "./Error.vue";
+import {Department} from "./Department.js";
 
 export default {
     name: "department-edit",
     components: {Error, PageHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
     props: {
-        id: Number,
-        name: String,
-        description: String,
-        headId: Number,
-        membersIds: Array,
+        jsonDepartment: JSON,
         listUrl: String,
         storeUrl: String,
         updateUrl: String,
+        viewUrl: String,
+        findUsersUrl: String,
     },
-    setup () {
-        return { v$: useVuelidate() }
-    },
-    data() {
-        let members = [];
-        members.push(new User());
 
-        let department = {
-            id: this.id,
-            name: this.name,
-            description: this.description,
-            head: null,
-            members: members,
+    methods: {
+        openMemberSelectorPopup() {
+            this.memberSelectorPopup.opened = true;
+            this.memberSelectorPopup.search = '';
+            this.memberSelectorPopup.excludeUsers = this.department.members.map(user => user.id);
+        },
+
+        closeMemberSelectorPopup() {
+            this.memberSelectorPopup.opened = false;
+        },
+
+        isMemberSelectorPopupOpened() {
+            return this.memberSelectorPopup.opened;
+        },
+
+        openHeadSelectorPopup() {
+            this.headSelectorPopup.opened = true;
+            this.headSelectorPopup.search = '';
+            this.headSelectorPopup.excludeUsers = [this.department.head.id];
+        },
+
+        closeHeadSelectorPopup() {
+            this.headSelectorPopup.opened = false;
+        },
+
+        isHeadSelectorPopupOpened() {
+            return this.headSelectorPopup.opened;
+        },
+
+        /**
+         * @param {User} user
+         */
+        selectHead(user) {
+            this.closeHeadSelectorPopup();
+            this.department.head = user;
+        },
+
+        /**
+         * @param {User} memberToDelete
+         */
+        deleteMember(memberToDelete) {
+            this.department.members = this.department.members.filter(user => user.id !== memberToDelete.id);
+        },
+
+        /**
+         * @param {User} memberToAdd
+         */
+        addMember(memberToAdd) {
+            this.department.members.push(memberToAdd);
+        },
+
+        saveDepartment() {
+            this.saveError = '';
+            this.v$.department.$touch();
+            if (this.v$.$error) {
+                return;
+            }
+
+            this.saveDisabled = true;
+            axios({
+                method: this.department.id > 0 ? 'put' : 'post',
+                url: this.department.id > 0 ? this.updateUrl : this.storeUrl,
+                data: {
+                    headId: this.department.head.id,
+                    membersIds: this.department.members.map(member => member.id),
+                    name: this.department.name,
+                    description: this.department.description,
+                }
+            })
+                .then(() => location.href = this.viewUrl)
+                .catch(() => {
+                    this.saveError = 'Что-то пошло не так. Повторите позднее';
+                })
+                .finally(() => this.saveDisabled = false)
         }
+    },
 
+    created() {
+        this.department = Department.fromJson(this.jsonDepartment);
+    },
+
+    setup() {
+        return {v$: useVuelidate()}
+    },
+
+    data() {
         return {
-            department: department,
+            department: new Department(),
             memberSelectorPopup: {
                 opened: false,
                 excludeUsers: [],
@@ -132,11 +224,12 @@ export default {
                 excludeUsers: [],
                 search: ''
             },
-            saveError: ''
+            saveError: '',
+            saveDisabled: false
         }
     },
 
-    validations () {
+    validations() {
         return {
             department: {
                 head: {required},
@@ -153,70 +246,6 @@ export default {
             }
         };
     },
-
-    methods: {
-        /**
-         * @param {string} search
-         * @param {Number[]} excludeUsers
-         */
-        openMemberSelectorPopup(search = '', excludeUsers = []) {
-            this.memberSelectorPopup.opened = true;
-            this.memberSelectorPopup.search = search;
-            this.memberSelectorPopup.excludeUsers = excludeUsers;
-        },
-
-        closeMemberSelectorPopup() {
-            this.memberSelectorPopup.opened = false;
-        },
-
-        isMemberSelectorPopupOpened() {
-            return this.memberSelectorPopup.opened;
-        },
-
-        /**
-         * @param {string} search
-         * @param {Number[]} excludeUsers
-         */
-        openHeadSelectorPopup(search = '', excludeUsers = []) {
-            this.headSelectorPopup.opened = true;
-            this.headSelectorPopup.search = search;
-            this.headSelectorPopup.excludeUsers = excludeUsers;
-        },
-
-        closeHeadSelectorPopup() {
-            this.headSelectorPopup.opened = false;
-        },
-
-        isHeadSelectorPopupOpened() {
-            return this.headSelectorPopup.opened;
-        },
-
-        saveDepartment() {
-            this.v$.department.$touch();
-            if (this.v$.$error) {
-                return;
-            }
-
-            let membersIds = this.department.members.map((member) => member.id);
-            let httpMethod = this.department.id > 0 ? 'put' : 'post';
-            let url = this.department.id > 0 ? this.updateUrl : this.storeUrl;
-
-            axios({
-                method: httpMethod,
-                url: url,
-                data: {
-                    headId: this.department.head.id,
-                    membersIds: membersIds,
-                    name: this.department.name,
-                    description: this.department.description,
-                }
-            })
-                .then(() => location.reload())
-                .catch((res) => {
-                    this.saveError = res.errorMess;
-                })
-        }
-    }
 }
 </script>
 

@@ -1,13 +1,20 @@
 import {User} from "../User/User.js";
 
 export class Department {
+    /** @type {Number} */
+    id;
+    /** @type {String} */
     name;
+    /** @type {String} */
     description;
+    /** @type {User} */
     head;
-    members;
+    /** @type {User[]} */
+     members;
 
     static fromJson(obj) {
         let d = new Department();
+        d.id = obj.id;
         d.name = obj.name;
         d.description = obj.description;
         d.head = User.fromJson(obj.head);

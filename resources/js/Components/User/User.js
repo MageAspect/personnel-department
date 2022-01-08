@@ -24,7 +24,7 @@ export class User {
         u.phone = obj.phone ? obj.phone : '';
         u.email = obj.email ? obj.email : '';
         u.position = obj.position ? obj.position : '';
-        u.avatarPath = obj.avatarPath ? obj.avatarPath : '/img/user/user-plug.svg';
+        u.avatarPath = obj.avatar ? obj.avatar : '/img/user/user-plug.svg';
         u.profileUrl = obj.profileUrl ? obj.profileUrl : '';
         u.salary = obj.salary ? obj.salary : null;
 

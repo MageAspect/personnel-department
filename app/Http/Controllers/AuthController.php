@@ -17,16 +17,19 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function showLoginForm(): View
+    public function showLoginForm()
     {
         return view('auth.login');
     }
 
     public function processLoginForm(LoginRequest $request)
     {
-        $data = $request->validated();
+        $authAttempt = [
+            'email' => $request->get('email'),
+            'password' => $request->get('password')
+        ];
 
-        if (auth('web')->attempt($data)) {
+        if (auth('web')->attempt($authAttempt)) {
             return redirect(route('departments.index'));
         }
 
@@ -42,11 +45,12 @@ class AuthController extends Controller
 
     public function processForgotPasswordForm(ForgotPasswordRequest $request)
     {
-        $email = $request->validated()['email'];
-
-        $status = Password::sendResetLink(array('email' => $email), function (CanResetPassword $user, string $token) {
-            $this->dispatch(new SendResetPasswordLink($user, $token));
-        });
+        $status = Password::sendResetLink(
+            ['email' => $request->get('email')],
+            function (CanResetPassword $user, string $token) {
+                $this->dispatch(new SendResetPasswordLink($user, $token));
+            }
+        );
 
         if ($status == Password::RESET_THROTTLED) {
             return back()->withErrors([
@@ -63,7 +67,7 @@ class AuthController extends Controller
         return back()->with('mail-sent', true)->withInput();
     }
 
-    public function showResetPasswordForm(string $token, Request $request)
+    public function showResetPasswordForm(Request $request, string $token)
     {
         if (!$this->isValidReset($request->get('email'), $token)) {
             return redirect()->route('auth.forgot-password');
@@ -81,8 +85,6 @@ class AuthController extends Controller
 
     public function processResetPasswordForm(ResetPasswordRequest $request)
     {
-        $request->validated();
-
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {

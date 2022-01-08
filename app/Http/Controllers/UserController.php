@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Personnel\UserEntry;
 use Illuminate\Http\Request;
+
 
 class UserController extends Controller
 {
@@ -43,7 +46,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -80,5 +83,23 @@ class UserController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function findUsers(Request $request, User $user)
+    {
+        if ($request->get('search')) {
+            $user = $user->withName($request->get('search'));
+        }
+
+        if (!empty($request->get('excludedIds'))) {
+            $user = $user->whereNotIn('id', $request->get('excludedIds'));
+        }
+
+        $users = array();
+        foreach ($user->with('departments')->limit(10)->get() as $u) {
+            $users[] = UserEntry::fromModel($u);
+        }
+
+        return response()->json(['users' => $users], 200, [], JSON_UNESCAPED_UNICODE);
     }
 }

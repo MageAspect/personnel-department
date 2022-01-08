@@ -51,6 +51,7 @@ Route::post(
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('departments', DepartmentController::class);
+    Route::get('/users/find', [UserController::class, 'findUsers'])->name('users.find');
     Route::resource('users', UserController::class);
 });
 

@@ -12,14 +12,14 @@ class DepartmentPolicy
     use HandlesAuthorization;
 
 
-    public function before(User $current): bool
+    public function before(User $current): ?bool
     {
-        return $current->isAdministrator();
+        return $current->isAdministrator() ?: null;
     }
 
     public function update(User $current, Department $department): bool
     {
-        return $current->id === $department->head->id;
+        return $current->id === $department->head_id;
     }
 
     public function updateHead(): bool

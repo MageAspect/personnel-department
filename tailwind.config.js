@@ -54,10 +54,16 @@ module.exports = {
             maxHeight: {
                 '70': '17.5rem',
             },
+            minHeight: {
+                '19.25': '4.8125rem',
+            },
             width: {
                 'full-screen': '100vw',
                 'inherit': 'inherit',
                 '13': '3.25rem'
+            },
+            minWidth: {
+                '182.25': '45.5625rem'
             },
             flexBasis: {
                 '68': '17rem'

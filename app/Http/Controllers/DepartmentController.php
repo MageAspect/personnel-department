@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\DepartmentEditRequest;
 use App\Models\Department;
-use App\Personnel\Department\DepartmentStore;
 use App\Personnel\DepartmentEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 
 class DepartmentController extends Controller
@@ -22,20 +23,36 @@ class DepartmentController extends Controller
         return view('departments.list', ['departments' => $departments, 'links' => $ds->links()]);
     }
 
-    public function edit(int $id) {
-        return view('departments.edit');
+    public function edit(int $id)
+    {
+        if (!Gate::allows('update', Department::class)) {
+            return view('departments.edit', ['cannotEdit' => true]);
+        }
+
+        $d = Department::query()->find($id);
+        return view('departments.edit', ['department' => DepartmentEntry::fromModel($d)]);
     }
 
-    public function show(int $id) {
+    public function show(int $id)
+    {
         $d = Department::query()->find($id);
         return view('departments.show', ['department' => DepartmentEntry::fromModel($d)]);
     }
 
-    public function update(Request $request, $id)
+    public function update(DepartmentEditRequest $request, int $id)
     {
-        return response()->json([
-            'success' => true
-        ]);
+        Gate::authorize('update', Department::class);
+
+        $department = Department::query()->findOrFail($id);
+
+        $department->name = $request->get('name');
+        $department->description = $request->get('description');
+        if (Gate::allows('updateHead', Department::class)) {
+            $department->head_id = $request->get('headId');
+        }
+        $department->members()->sync($request->get('membersIds'));
+
+        $department->save();
     }
 
     public function store(Request $request)
@@ -45,7 +62,8 @@ class DepartmentController extends Controller
         ]);
     }
 
-    public function destroy($id) {
+    public function destroy($id)
+    {
         Department::query()->where('id', $id)->delete();
         return back();
     }

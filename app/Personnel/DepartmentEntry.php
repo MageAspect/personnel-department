@@ -7,7 +7,8 @@
 namespace App\Personnel;
 
 
-use App\Models\Department;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 
 
 class DepartmentEntry
@@ -16,6 +17,8 @@ class DepartmentEntry
     public string $name = '';
     public string $description = '';
     public ?UserEntry $head = null;
+    public bool $canEdit = false;
+    public bool $canDelete = false;
 
     /**
      * @var UserEntry[]
@@ -27,12 +30,14 @@ class DepartmentEntry
         $this->id = $id;
     }
 
-    public static function fromModel(Department $d): DepartmentEntry
+    public static function fromModel( $d): DepartmentEntry
     {
         $department = new DepartmentEntry($d->id);
         $department->name = $d->name;
         $department->description = $d->description;
         $department->head = UserEntry::fromModel($d->head);
+        $department->canEdit = Gate::allows('update', $d);
+        $department->canDelete = Gate::allows('delete', $d);
 
         foreach ($d->members as $m) {
             $department->members[] = UserEntry::fromModel($m);
