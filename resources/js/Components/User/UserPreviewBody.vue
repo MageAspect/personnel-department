@@ -5,7 +5,7 @@
     </div>
 
     <div class="ml-4 font-medium">
-        <a :href="user.profileLink" class="mb-1 link-gray-light text-base">{{ fullName }}</a>
+        <a :href="user.profileUrl" class="mb-1 link-gray-light text-base">{{ fullName }}</a>
         <div class="text-gray text-xs">{{ user.position }}</div>
     </div>
 

@@ -8,9 +8,11 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+
 
     /**
      * The attributes that are mass assignable.
@@ -42,15 +44,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function getFullNameAttribute(): string {
-        return "$this->last_name $this->name $this->patronymic";
+    public function departments()
+    {
+        return $this->belongsToMany(Department::class, 'user_department');
     }
 
-    public function getFormattedNameAttribute(): string {
-        return "$this->last_name $this->name";
+    public function isAdministrator(): bool
+    {
+        return (bool) $this->is_admin;
     }
 
-    public function getProfilePathAttribute(): string {
-        return route('users.show', ['user' => $this->id]);
+    public function getSalaryAttribute(): ?int {
+        if ($this->can('viewWorkFields', User::class)) {
+            return $this->getAttributes()['salary'];
+        }
+
+        return null;
     }
 }

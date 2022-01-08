@@ -18,10 +18,10 @@
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
 </head>
 <body class="font-sans h-full">
-<div id="app" class="h-full">
+<div  class="h-full">
     <div class="flex  h-full bg-oceanic-light">
         @include('sidebar')
-        <div class="ml-7 h-full bg-oceanic grow py-5 ui-y-scroll">
+        <div id="app" class=" ml-7 h-full bg-oceanic grow py-5 ui-y-scroll">
             @yield('content')
         </div>
     </div>

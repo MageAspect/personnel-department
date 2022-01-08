@@ -2,11 +2,13 @@ export class User {
     id;
     name;
     lastName;
+    patronymic;
     email;
     phone;
     position;
     avatarPath;
-    profileLink;
+    profileUrl;
+    salary;
 
     /**
      *
@@ -18,10 +20,13 @@ export class User {
         u.id = obj.id;
         u.name = obj.name ? obj.name : '';
         u.lastName = obj.lastName ? obj.lastName : '';
+        u.patronymic = obj.patronymic ? obj.patronymic : '';
         u.phone = obj.phone ? obj.phone : '';
+        u.email = obj.email ? obj.email : '';
         u.position = obj.position ? obj.position : '';
-        u.avatarPath = obj.avatarPath ? obj.avatarPath : '';
-        u.profileLink = obj.profileLink ? obj.profileLink : '';
+        u.avatarPath = obj.avatarPath ? obj.avatarPath : '/img/user/user-plug.svg';
+        u.profileUrl = obj.profileUrl ? obj.profileUrl : '';
+        u.salary = obj.salary ? obj.salary : null;
 
         return u;
     }
@@ -30,13 +35,15 @@ export class User {
         let cloned = new User();
 
         cloned.id = this.id;
-        cloned.name = 'Борис';
+        cloned.name = this.name;
         cloned.lastName = this.lastName;
+        cloned.patronymic = this.patronymic;
         cloned.phone = this.phone;
+        cloned.email = this.email;
         cloned.position = this.position;
         cloned.avatarPath = this.avatarPath;
-        cloned.profileLink = this.profileLink;
-
+        cloned.profileUrl = this.profileUrl;
+        cloned.salary = this.salary
         return cloned;
     }
 }

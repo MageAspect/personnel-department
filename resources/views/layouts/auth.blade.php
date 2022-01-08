@@ -17,7 +17,7 @@
     <link rel="icon" href="/img/favicon.ico" type="image/x-icon" />
 </head>
 <body class="font-sans h-full">
-<div id="app" class="h-full">
+<div class="h-full">
     <div class="flex flex-col h-full">
         <div class="flex justify-between px-5 py-4 bg-oceanic">
             <div class="py-2 font-medium tracking-wide text-xl text-gray-light">
@@ -28,7 +28,5 @@
         @yield('content')
     </div>
 </div>
-
-<script src="{{ mix('/js/app.js') }}"></script>
 </body>
 </html>

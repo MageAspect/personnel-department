@@ -14,6 +14,7 @@
         @else
             store-url="{{ route('departments.store') }}"
         @endif
+        list-url="{{ route('departments.index') }}"
         :id="15"
         name="Бухгалтерия"
         description="Привет мир"

@@ -12,4 +12,8 @@ class Department extends Model
     public function head() {
         return $this->belongsTo(User::class);
     }
+
+    public function members() {
+        return $this->belongsToMany(User::class, 'user_department');
+    }
 }

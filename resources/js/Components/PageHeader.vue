@@ -12,6 +12,7 @@
                            class="text-xl leading-5 bg-unset border border-blue-dark pt-1 px-1.25 pb-1.25 font-light"
                            :value="titleInput"
                            @input="$emit('update:titleInput', $event.target.value)">
+                    <slot name="search"></slot>
                 </div>
             </div>
             <div class="flex">

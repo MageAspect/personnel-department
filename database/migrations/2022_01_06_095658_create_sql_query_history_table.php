@@ -36,6 +36,9 @@ class CreateSqlQueryHistoryTable extends Migration
      */
     public function down()
     {
+        Schema::table('sql_query_history', function (Blueprint $table) {
+            $table->dropForeign('user_id');
+        });
         Schema::dropIfExists('sql_query_history');
     }
 }

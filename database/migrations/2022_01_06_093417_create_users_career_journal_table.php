@@ -43,6 +43,10 @@ class CreateUsersCareerJournalTable extends Migration
      */
     public function down()
     {
+        Schema::table('users_career_journal', function (Blueprint $table) {
+            $table->dropForeign('user_id');
+            $table->dropForeign('department_id');
+        });
         Schema::dropIfExists('users_career_journal');
     }
 }

@@ -64,7 +64,7 @@ export default {
         user.phone = '8 (961) 689 28-48';
         user.position = 'Генеральный директор';
         user.avatarPath = '/img/user/user.jpg';
-        user.profileLink = '/123/';
+        user.profileUrl = '/123/';
         this.searchedUsers.push(user);
     },
     destroyed: function () {

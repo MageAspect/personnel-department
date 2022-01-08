@@ -4,7 +4,7 @@
             <i class="fas fa-layer-group"></i>
         </template>
         <template v-slot:buttons>
-            <a href="/" class="btn btn-light mr-4">
+            <a :href="listUrl" class="btn btn-light mr-4">
                 <span>К списку</span>
             </a>
             <button @click.prevent="saveDepartment()" class="btn btn-success">
@@ -101,6 +101,7 @@ export default {
         description: String,
         headId: Number,
         membersIds: Array,
+        listUrl: String,
         storeUrl: String,
         updateUrl: String,
     },
