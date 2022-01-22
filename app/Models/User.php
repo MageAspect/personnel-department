@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -55,26 +55,21 @@ class User extends Authenticatable
         return (bool) $this->is_admin;
     }
 
-    public function canViewSalary(User $user): ?int
+    function scopeWithFind(Builder $query, string $find): Builder
     {
-        return $this->can('viewWorkFields', $user);
-    }
+        $names = explode(" ", $find);
 
-    function scopeWithName($query, $name)
-    {
-        $names = explode(" ", $name);
+        $probablyName = !empty($names[0]) ? $names[0] : '';
+        $probablyLastName = !empty($names[1]) ? $names[1] : '';
 
-        $names[0] = !empty($names[0]) ? "%$names[0]%" : '%%';
-        $names[1] = !empty($names[1]) ? "%$names[1]%" : '%%';
-
-        return User::where(function ($query) use ($names) {
-            $query->orWhere(function ($query) use ($names) {
-                $query->where('name', 'ilike', $names[0]);
-                $query->where('last_name', 'ilike', $names[1]);
+        return $query->where(function ($query) use ($probablyName, $probablyLastName) {
+            $query->orWhere(function ($query) use ($probablyName, $probablyLastName) {
+                $query->where('name', 'ilike', "%$probablyName%");
+                $query->where('last_name', 'ilike', "%$probablyLastName%");
             });
-            $query->orWhere(function ($query) use ($names) {
-                $query->where('last_name', 'ilike', $names[0]);
-                $query->where('name', 'ilike', $names[1]);
+            $query->orWhere(function ($query) use ($probablyName, $probablyLastName) {
+                $query->where('last_name', 'ilike', "%$probablyName%");
+                $query->where('name', 'ilike', "%$probablyLastName%");
             });
         });
     }

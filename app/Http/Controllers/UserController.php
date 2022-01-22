@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Personnel\UserEntry;
+use App\Personnel\Users\UsersStore;
+use App\Personnel\Users\UsersStoreException;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
@@ -85,21 +86,26 @@ class UserController extends Controller
         //
     }
 
-    public function findUsers(Request $request, User $user)
+    public function findUsers(UsersStore $usersStore, Request $request): JsonResponse
     {
+        $filter = [];
         if ($request->get('search')) {
-            $user = $user->withName($request->get('search'));
+            $filter['find'] = $request->get('search');
         }
-
         if (!empty($request->get('excludedIds'))) {
-            $user = $user->whereNotIn('id', $request->get('excludedIds'));
+            $filter['excludedIds'] = $request->get('excludedIds');
         }
 
-        $users = array();
-        foreach ($user->with('departments')->limit(10)->get() as $u) {
-            $users[] = UserEntry::fromModel($u);
+        try {
+            $users = $usersStore->findUsers($filter, []);
+        } catch (UsersStoreException) {
+            return response()->json(
+                ['message' => 'Не удалось получить список пользователей'],
+                500,
+                [],
+                JSON_UNESCAPED_UNICODE);
         }
 
-        return response()->json(['users' => $users], 200, [], JSON_UNESCAPED_UNICODE);
+        return response()->json(['users' => $users->all()], 200, [], JSON_UNESCAPED_UNICODE);
     }
 }

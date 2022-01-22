@@ -22,6 +22,10 @@ class DepartmentPolicy
         return $current->id === $department->head_id;
     }
 
+    public function store(): bool {
+        return false;
+    }
+
     public function updateHead(): bool
     {
         return false;

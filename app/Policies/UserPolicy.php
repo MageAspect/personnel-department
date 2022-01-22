@@ -16,6 +16,21 @@ class UserPolicy
         return $current->isAdministrator() ?: null;
     }
 
+    public function viewWorkFields(User $current, User $user): bool
+    {
+        if ($current->id === $user->id) {
+            return true;
+        }
+
+        foreach ($user->departments as $d) {
+            if ($d->head_id === $current->id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function update(User $current, User $user): bool
     {
         return $current->id === $user->id;
@@ -26,14 +41,8 @@ class UserPolicy
         return false;
     }
 
-    public function viewWorkFields(User $current, User $user): bool
+    public function store(): bool
     {
-        foreach ($user->departments as $d) {
-            if ($d->head->id === $current->id) {
-                return true;
-            }
-        }
-
         return false;
     }
 }

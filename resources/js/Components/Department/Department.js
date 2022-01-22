@@ -20,7 +20,7 @@ export class Department {
         d.head = User.fromJson(obj.head);
 
         d.members = [];
-        for (let memberObj of obj.members) {
+        for (let memberObj of Object.values(obj.members)) {
             d.members.push(User.fromJson(memberObj));
         }
 

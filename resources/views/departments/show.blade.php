@@ -4,10 +4,10 @@
  * @author mosowell https://github.com/mosowell
  */
 
-use App\Personnel\DepartmentEntry;
+use App\Personnel\Department\DepartmentEntity;
 
 
-/** @var DepartmentEntry $department */
+/** @var \App\Personnel\Department\DepartmentEntity $department */
 ?>
 
 @extends('layouts.app')

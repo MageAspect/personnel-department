@@ -91,7 +91,7 @@ export default {
                 }
 
                 let searched = [];
-                for (let u of response.data.users) {
+                for (let u of Object.values(response.data.users)) {
                     searched.push(User.fromJson(u));
                 }
 

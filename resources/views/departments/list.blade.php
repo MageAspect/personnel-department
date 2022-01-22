@@ -4,10 +4,8 @@
  * @author mosowell https://github.com/mosowell
  */
 
-use App\Personnel\DepartmentEntry;
 
-
-/** @var DepartmentEntry[] $departments */
+/** @var \App\Personnel\Department\DepartmentEntity[] $departments */
 ?>
 
 @extends('layouts.app')
@@ -24,7 +22,7 @@ use App\Personnel\DepartmentEntry;
             </a>
         </template>
         <template v-slot:search>
-            <form class="group relative ml-6">
+            <form class="group relative ml-6" method="get">
                 <svg width="20" height="20" fill="currentColor"
                      class="absolute left-3 top-1/2 -mt-2.5 text-gray-400 pointer-events-none
                             group-focus-within:text-blue-500"
@@ -36,7 +34,10 @@ use App\Personnel\DepartmentEntry;
                 </svg>
                 <input class="focus:ring-2 focus:ring-blue focus:outline-none w-64 text-sm leading-6 bg-oceanic
                               text-gray-900 placeholder-gray-400 rounded-sm py-2 pl-10 ring-1 ring-gray-200 shadow-sm"
-                       type="text" placeholder="Найти отдел...">
+                       type="text"
+                       name="find"
+                       placeholder="Найти отдел..."
+                       value="{{ request()->find }}">
             </form>
         </template>
     </page-header>
@@ -88,6 +89,6 @@ use App\Personnel\DepartmentEntry;
         @endforeach
     </div>
     <div class="px-6">
-        {{ $links }}
+        {!! $departments->links() !!}
     </div>
 @endsection
