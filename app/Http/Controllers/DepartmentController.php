@@ -3,113 +3,142 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DepartmentEditRequest;
-use App\Models\Department;
 use App\Personnel\Department\DepartmentEntity;
-use App\Personnel\Department\DepartmentsStore;
-use App\Personnel\Department\DepartmentsStoreException;
+use App\Personnel\Department\DepartmentStore;
+use App\Personnel\Department\DepartmentStoreException;
 use App\Personnel\Users\UserEntity;
+use App\Personnel\Users\UserStore;
+use App\Personnel\Users\UserStoreException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 
 
 class DepartmentController extends Controller
 {
-    public function index(Request $request, DepartmentsStore $departmentsStore): View
+    public function index(Request $request, DepartmentStore $departmentsStore): View
     {
         $filter = array();
         if ($request->get('find')) {
             $filter['find'] = $request->get('find');
         }
+
         try {
-            $departments = $departmentsStore->findDepartments($filter, array(), 8);
-        } catch (DepartmentsStoreException $e) {
+            $departments = $departmentsStore->paginateDepartments($filter, array(), 8);
+        } catch (DepartmentStoreException $e) {
             return view('departments.list', array('error' => $e->getMessage()));
         }
 
         return view('departments.list', ['departments' => $departments]);
     }
 
-    public function show(int $id, DepartmentsStore $departmentsStore): View
+    public function show(int $id, DepartmentStore $departmentsStore): View
     {
         try {
             $d = $departmentsStore->findById($id);
-        } catch (DepartmentsStoreException $e) {
+        } catch (DepartmentStoreException $e) {
             return view('departments.show', array('error' => $e->getMessage()));
         }
 
         return view('departments.show', array('department' => $d));
     }
 
-    public function edit(int $id, DepartmentsStore $departmentsStore): View
+    public function edit(int $id, DepartmentStore $departmentsStore): View
     {
-        $viewData = array();
         try {
-            if(!$departmentsStore->canUpdate($id)) {
-                $viewData['error'] = 'Недостаточно прав для редактирования отдела';
-            } else {
-                $viewData['department'] = $departmentsStore->findById($id);
+            if (!$departmentsStore->canUpdate($id)) {
+                throw new UnauthorizedActionException('Недостаточно прав для редактирования отдела');
             }
-        } catch (DepartmentsStoreException $e) {
-            $viewData = array('error' => $e->getMessage());
-        }
 
-        return view('departments.edit', $viewData);
+            return view('departments.edit', array('department' => $departmentsStore->findById($id)));
+
+        } catch (DepartmentStoreException|UnauthorizedActionException $e) {
+            return view('departments.edit', array('error' => $e->getMessage()));
+        }
     }
 
 
-    public function update(DepartmentEditRequest $request, DepartmentsStore $departmentsStore, int $id): void
-    {
-        Gate::authorize('update', Department::class);
+    public function update(
+        DepartmentEditRequest $request,
+        DepartmentStore $departmentsStore,
+        int $id
+    ): JsonResponse {
+        $department = $this->createFromRequest($request);
+        $department->id = $id;
 
-        $department = Department::query()->findOrFail($id);
-
-        $department->name = $request->get('name');
-        $department->description = $request->get('description');
-        if (Gate::allows('updateHead', Department::class)) {
-            $department->head_id = $request->get('headId');
-        }
-        $department->members()->sync($request->get('membersIds'));
-
-        $department->save();
-    }
-
-    public function create(): View
-    {
-        if (!Gate::allows('store', Department::class)) {
-            return view('departments.edit', ['cannotEdit' => true]);
+        try {
+            $departmentsStore->update($department);
+        } catch (DepartmentStoreException $e) {
+            return response()->json(
+                array('error' => $e->getMessage()),
+                500
+            );
         }
 
-        $department = new DepartmentEntity(0);
-        $department->name = 'Новый отдел';
-        $department->head = UserEntity::fromModel(auth()->user());
-
-        return view('departments.edit', ['department' => $department]);
+        return response()->json();
     }
 
-    public function store(Request $request): JsonResponse
+    public function create(UserStore $userStore, DepartmentStore $departmentsStore, Request $request): View
     {
-        Gate::authorize('store', Department::class);
+        try {
+            if (!$departmentsStore->canStore()) {
+                throw new UnauthorizedActionException('Недостаточно прав для создания отдела');
+            }
 
-        $department = new Department();
-        $department->name = $request->get('name');
-        $department->description = $request->get('description');
-        if (Gate::allows('updateHead', Department::class)) {
-            $department->head_id = $request->get('headId');
+            $department = new DepartmentEntity();
+            $department->name = 'Новый отдел';
+            $department->head = $userStore->findById($request->user()->id);
+
+            return view('departments.edit', array('department' => $department));
+        } catch (UserStoreException|UnauthorizedActionException $e) {
+            return view('departments.edit', array('error' => $e->getMessage()));
         }
-        $department->members()->sync($request->get('membersIds'));
-        $department->save();
-
-        return response()->json([
-            'id' => $department->id
-        ]);
     }
 
-    public function destroy($id): RedirectResponse
+    public function store(Request $request, DepartmentStore $departmentsStore): JsonResponse
     {
-        Department::query()->where('id', $id)->delete();
+        $department = $this->createFromRequest($request);
+
+        try {
+            return response()->json(array(
+                'id' => $departmentsStore->store($department)
+            ));
+
+        } catch (DepartmentStoreException $e) {
+            return response()->json(
+                array('error' => $e->getMessage()),
+                500
+            );
+        }
+    }
+
+    public function destroy(int $id, DepartmentStore $departmentsStore): RedirectResponse
+    {
+        try {
+            $departmentsStore->delete($id);
+        } catch (DepartmentStoreException $e) {
+            return back()->withErrors(array('deleteError' => $e->getMessage()));
+        }
+
         return back();
+    }
+
+    protected function createFromRequest(Request $request): DepartmentEntity
+    {
+        $department = new DepartmentEntity();
+
+        $department->name = $request->get('name');
+        $department->description = $request->get('description');
+        $department->head->id = $request->get('headId');
+
+        foreach ($request->get('membersIds') as $memberId) {
+            $m = new UserEntity();
+            $m->id = $memberId;
+
+            $department->members[] = $m;
+        }
+
+        return $department;
     }
 }

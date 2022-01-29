@@ -7,4 +7,4 @@
 namespace App\Personnel\Department;
 
 
-class DepartmentNotFoundException extends DepartmentsStoreException {}
+class DepartmentNotFoundException extends DepartmentStoreException {}

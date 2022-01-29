@@ -7,4 +7,4 @@
 namespace App\Personnel\Users;
 
 
-class UsersStoreException extends \Exception {}
+class UserStoreException extends \Exception {}

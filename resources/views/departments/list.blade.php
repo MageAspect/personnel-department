@@ -67,13 +67,13 @@
                         {{ $department->description }}
                     </div>
                 </div>
-                @if ($department->canEdit || $department->canDelete)
+                @if ($department->canBeUpdated || $department->canBeDeleted)
                     <div class="bg-oceanic-light p-1 flex justify-between text-2xs text-white ">
-                        @if ($department->canEdit)
+                        @if ($department->canBeUpdated)
                             <a href="{{ route('departments.edit', ['department' => $department->id]) }}"
                                class="p-2 uppercase font-medium hover:text-green transition">редактировать</a>
                         @endif
-                        @if ($department->canDelete)
+                        @if ($department->canBeDeleted)
                             <form action="{{ route('departments.destroy', ['department' => $department->id]) }}"
                                   method="post">
                                 @method('delete')

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Personnel\Users\UsersStore;
-use App\Personnel\Users\UsersStoreException;
+use App\Personnel\Users\UserStore;
+use App\Personnel\Users\UserStoreException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -86,7 +86,7 @@ class UserController extends Controller
         //
     }
 
-    public function findUsers(UsersStore $usersStore, Request $request): JsonResponse
+    public function findUsers(UserStore $userStore, Request $request): JsonResponse
     {
         $filter = [];
         if ($request->get('search')) {
@@ -97,8 +97,8 @@ class UserController extends Controller
         }
 
         try {
-            $users = $usersStore->findUsers($filter, []);
-        } catch (UsersStoreException) {
+            $users = $userStore->findUsers($filter, []);
+        } catch (UserStoreException) {
             return response()->json(
                 ['message' => 'Не удалось получить список пользователей'],
                 500,

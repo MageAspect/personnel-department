@@ -1,12 +1,10 @@
 <template>
-    <div class="contents">
-        <user-preview-body :user="user"
-        ></user-preview-body>
-        <div class="pl-3 pt-1">
-            <div @click="$emit('selectUser', user)" :class="[actionButtonClass, 'btn']">{{ actionButtonText }}</div>
-        </div>
-        <div></div>
+    <user-preview-body :user="user"
+    ></user-preview-body>
+    <div class="pl-3 pt-1">
+        <div @click="$emit('selectUser', user)" :class="[actionButtonClass, 'btn']">{{ actionButtonText }}</div>
     </div>
+    <div></div>
     <div class="grid-rows-delimiter"></div>
 </template>
 

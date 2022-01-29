@@ -1,24 +1,24 @@
 <template>
-    <teleport to="body">
         <div class="absolute top-0 left-0 bg-popup w-full-screen h-full-screen">
             <div class="w-full h-full flex items-center justify-center">
                 <div v-if="initialized" class="bg-oceanic-light w-fit pt-10 pb-8 px-8 min-w-182.25 relative">
                     <div class="absolute -top-12 -right-8"><i @click="closePopupTrigger()"
                                                               class="cursor-pointer text-2xl text-gray-light  fa-solid fa-xmark"></i>
                     </div>
-                    <search @input="onSearchInput" v-model="search" class="mb-6 w-2/4" placeholder="Найти сотрудника..."></search>
-                    <div v-if="this.searchedUsers.length > 0" class="grid grid-col-users-list gap-y-6 ui-y-scroll min-h-19.25 max-h-96 px-2">
-                        <user-preview-in-grid v-for="user in searchedUsers" :user="user"
-                                              action-button-text="Выбрать"
-                                              action-button-class="btn-light-add"
-                                              @select-user="userSelected"
-                        ></user-preview-in-grid>
+                    <search @input="onSearchInput" v-model="search" class="mb-6 w-2/4"
+                            placeholder="Найти сотрудника..."></search>
+                    <div v-if="this.searchedUsers.length > 0"
+                         class="grid grid-col-users-list gap-y-6 ui-y-scroll min-h-19.25 max-h-96 px-2">
+                            <user-preview-in-grid v-for="user in searchedUsers" :user="user" :key="user.id"
+                                                  action-button-text="Выбрать"
+                                                  action-button-class="btn-light-add"
+                                                  @select-user="userSelected"
+                            ></user-preview-in-grid>
                     </div>
                     <div v-else class="text-gray">Подходящие пользователи не найдены.</div>
                 </div>
             </div>
         </div>
-    </teleport>
 </template>
 
 <script>
@@ -102,11 +102,15 @@ export default {
     },
 
     created: function () {
+        document.body.style.overflow = 'hidden';
+
         window.addEventListener('keydown', this.closeEvent);
 
         this.searchUsers('');
     },
     destroyed: function () {
+        document.body.style.removeProperty('overflow');
+
         window.removeEventListener('keydown', this.closePopupTrigger);
     }
 }

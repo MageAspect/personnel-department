@@ -1,5 +1,5 @@
 <template>
-    <page-header title="Отдел кадров">
+    <page-header :title="department.name">
         <template v-slot:icon>
             <i class="fas fa-layer-group"></i>
         </template>

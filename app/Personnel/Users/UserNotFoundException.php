@@ -7,4 +7,4 @@
 namespace App\Personnel\Users;
 
 
-class UserNotFoundException extends UsersStoreException {}
+class UserNotFoundException extends UserStoreException {}

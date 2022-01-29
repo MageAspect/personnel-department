@@ -4,7 +4,7 @@
             <i class="fas fa-layer-group"></i>
         </template>
         <template v-slot:buttons>
-            <a :href="listUrl" class="btn btn-light mr-4">
+            <a href="/departments/" class="btn btn-light mr-4">
                 <span>К списку</span>
             </a>
             <button :disabled="saveDisabled" class="btn btn-success" @click.prevent="saveDepartment()">
@@ -36,12 +36,14 @@
             <div class="flex mb-6">
                 <div class="tracking-wider text-gray-light text-xl mr-3">Руководитель отдела</div>
                 <div @click="openHeadSelectorPopup()" class="btn btn-light-success">Изменить</div>
-                <user-selector-popup v-if="isHeadSelectorPopupOpened()"
-                                     :close-popup-trigger="closeHeadSelectorPopup"
-                                     :find-users-url="findUsersUrl"
-                                     :excluded-ids="[department.head.id]"
-                                     @select-user="selectHead">
-                </user-selector-popup>
+                <transition name="bounce">
+                    <user-selector-popup v-if="isHeadSelectorPopupOpened()"
+                                         :close-popup-trigger="closeHeadSelectorPopup"
+                                         :find-users-url="findUsersUrl"
+                                         :excluded-ids="getExcludedIds()"
+                                         @select-user="selectHead">
+                    </user-selector-popup>
+                </transition>
             </div>
             <div class="pb-6 border-b border-oceanic-lighter">
                 <user-preview v-if="department.head" :user="department.head"
@@ -95,13 +97,56 @@
             </div>
         </div>
     </div>
-    <user-selector-popup v-if="isMemberSelectorPopupOpened()"
-                         :close-popup-trigger="closeMemberSelectorPopup"
-                         :find-users-url="findUsersUrl"
-                         :excluded-ids="department.members.map(user => user.id)"
-                         @select-user="addMember">
-    </user-selector-popup>
+    <transition name="bounce">
+        <user-selector-popup v-if="isMemberSelectorPopupOpened()"
+                             :close-popup-trigger="closeMemberSelectorPopup"
+                             :find-users-url="findUsersUrl"
+                             :excluded-ids="getExcludedIds()"
+                             @select-user="addMember">
+        </user-selector-popup>
+    </transition>
 </template>
+
+<style scoped>
+.bounce-enter-active {
+    animation: bounce-in 0.7s;
+}
+
+.bounce-leave-active {
+    animation: bounce-out 0.5s;
+}
+
+@keyframes bounce-in {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.25);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce-out {
+    0% {
+        transform: scale(1);
+        opacity: 1
+    }
+    100% {
+        transform: scale(0);
+        opacity: 0
+    }
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.6s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+</style>
 
 <script>
 import UserSelectorPopup from "../User/UserSelectorPopup.vue";
@@ -110,7 +155,7 @@ import UserPreview from "../User/UserPreview.vue";
 import {User} from "../User/User.js";
 import PageHeader from "../PageHeader.vue";
 import useVuelidate from '@vuelidate/core'
-import {required, minLength, maxLength} from '@vuelidate/validators'
+import {maxLength, minLength, required} from '@vuelidate/validators'
 import Error from "./Error.vue";
 import {Department} from "./Department.js";
 
@@ -119,7 +164,6 @@ export default {
     components: {Error, PageHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
     props: {
         jsonDepartment: JSON,
-        listUrl: String,
         storeUrl: String,
         updateUrl: String,
         viewUrl: String,
@@ -139,6 +183,13 @@ export default {
 
         isMemberSelectorPopupOpened() {
             return this.memberSelectorPopup.opened;
+        },
+
+        getExcludedIds() {
+            let excluded = this.department.members.map(user => user.id);
+            excluded.push(this.department.head.id);
+
+            return excluded;
         },
 
         openHeadSelectorPopup() {
@@ -187,7 +238,7 @@ export default {
             this.saveDisabled = true;
             axios({
                 method: this.department.id > 0 ? 'put' : 'post',
-                url: this.department.id > 0 ? this.updateUrl : this.storeUrl,
+                url: this.department.id > 0 ? `/departments/${this.department.id}` : '/departments',
                 data: {
                     headId: this.department.head.id,
                     membersIds: this.department.members.map(member => member.id),
@@ -195,9 +246,19 @@ export default {
                     description: this.department.description,
                 }
             })
-                .then(() => location.href = this.viewUrl)
-                .catch(() => {
-                    this.saveError = 'Что-то пошло не так. Повторите позднее';
+                .then((response) => {
+                    if (this.department.id > 0) {
+                        location.href = `/departments/${this.department.id}`
+                    } else {
+                        location.href = `/departments/${response.data.id}`
+                    }
+                })
+                .catch((axiosError) => {
+                    if (axiosError.response.data.hasOwnProperty('error')) {
+                        this.saveError = axiosError.response.data.error;
+                    } else {
+                        this.saveError = 'Что-то пошло не так. Повторите позднее';
+                    }
                 })
                 .finally(() => this.saveDisabled = false)
         }

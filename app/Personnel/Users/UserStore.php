@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
 
-class UsersStore
+class UserStore
 {
     private User $currentUser;
 
@@ -23,7 +23,7 @@ class UsersStore
     }
 
     /**
-     * @throws UsersStoreException
+     * @throws UserStoreException
      */
     public function findById(int $id): UserEntity
     {
@@ -43,7 +43,7 @@ class UsersStore
      * @param  int  $offset
      * @param  int  $limit
      * @return Collection
-     * @throws UsersStoreException
+     * @throws UserStoreException
      */
     public function findUsers(array $filter, array $sort = [], int $offset = 0, int $limit = 20): Collection
     {
@@ -57,16 +57,16 @@ class UsersStore
                     WHEN (
                         SELECT count(*) > 0
                         FROM departments
-                                INNER JOIN user_department ud on departments.id = ud.department_id
+                            INNER JOIN user_department ud on departments.id = ud.department_id
                         WHERE users.id = ud.user_id
-                         AND departments.head_id = ?
+                            AND departments.head_id = ?
                     ) THEN TRUE
                     WHEN users.id = ? THEN TRUE
                     ELSE FALSE
                 END as can_current_user_view_work_fields
             ';
 
-            $q->selectRaw($selectSql, [$this->currentUser->id, $this->currentUser->id]);
+            $q->selectRaw($selectSql, array($this->currentUser->id, $this->currentUser->id));
 
             if (isset($filter['find'])) {
                 $q->withFind($filter['find']);
@@ -99,7 +99,7 @@ class UsersStore
 
             return collect($usersEntities);
         } catch (Exception $e) {
-            throw new UsersStoreException('Failed to find users', 0, $e);
+            throw new UserStoreException('Failed to find users', 0, $e);
         }
     }
 
@@ -121,7 +121,7 @@ class UsersStore
     }
 
     /**
-     * @throws UsersStoreException
+     * @throws UserStoreException
      */
     public function delete(int $id): void
     {
@@ -134,7 +134,7 @@ class UsersStore
         try {
             $user->delete();
         } catch (Exception $e) {
-            throw new UsersStoreException("Failed to delete User with id: $id", 0, $e);
+            throw new UserStoreException("Failed to delete User with id: $id", 0, $e);
         }
     }
 
@@ -149,11 +149,11 @@ class UsersStore
         $userEntity->position = (string) $user->position;
         $userEntity->phone = (string) $user->phone;
         $userEntity->avatar = (string) $user->avatar;
-        $userEntity->profileUrl = route('users.show', ['user' => $user->id]);
+        $userEntity->profileUrl = route('users.show', array('user' => $user->id));
 
         if ($this->currentUser->isAdministrator() || $user->can_current_user_view_work_fields) {
             $userEntity->salary = $user->salary;
-            $userEntity->canViewFormFields = true;
+            $userEntity->salaryCanBeViewed = true;
         }
 
         return $userEntity;

@@ -7,4 +7,4 @@
 namespace App\Personnel\Department;
 
 
-class DepartmentsStoreException extends \Exception {}
+class DepartmentStoreException extends \Exception {}

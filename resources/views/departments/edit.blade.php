@@ -18,10 +18,6 @@ $error = $error ?? null;
 @section('content')
     @if(!$error)
     <department-edit
-        update-url="{{ route('departments.update', ['department' => $department->id]) }}"
-        store-url="{{ route('departments.store') }}"
-        list-url="{{ route('departments.index') }}"
-        view-url="{{ route('departments.show', ['department' => $department->id]) }}"
         find-users-url="{{ route('users.find') }}"
         :json-department='@json($department, JSON_UNESCAPED_UNICODE)'>
     </department-edit>

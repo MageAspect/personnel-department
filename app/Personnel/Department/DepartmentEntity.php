@@ -16,8 +16,8 @@ class DepartmentEntity
     public string $name = '';
     public string $description = '';
     public UserEntity $head;
-    public bool $canEdit = false;
-    public bool $canDelete = false;
+    public bool $canBeUpdated = false;
+    public bool $canBeDeleted = false;
 
     /**
      * @var UserEntity[]
