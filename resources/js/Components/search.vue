@@ -23,7 +23,7 @@
 <script>
 export default {
     name: "search",
-    emits: ['search'],
+    emits: ['searchInput'],
     props: {
         placeholder: String
     },
@@ -34,11 +34,7 @@ export default {
                 return;
             }
 
-            clearTimeout(this.searchInputTimeout);
-            this.searchInputTimeout = setTimeout(
-                () => {this.$emit('search', search)},
-                500
-            )
+            this.$emit('searchInput', search)
         }
     }
 }

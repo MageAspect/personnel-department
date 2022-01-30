@@ -1,5 +1,5 @@
 <template>
-    <search @search="onSearch" class="w-96 mb-8" placeholder="Найти пользователей"></search>
+    <search @search-input="onSearch" class="w-96 mb-8" placeholder="Найти пользователей"></search>
     <div class="vld-parent w-fit">
         <loading v-model:active="isListLoading"
                  :is-full-page="false"
@@ -10,14 +10,38 @@
                  blur="0"
         />
         <div class="user-list-grid grid gap-y-6 w-fit">
-            <grid-header-call></grid-header-call>
-            <grid-header-call>id</grid-header-call>
-            <grid-header-call>Фамилия</grid-header-call>
-            <grid-header-call>Имя</grid-header-call>
-            <grid-header-call>Отчество</grid-header-call>
-            <grid-header-call>email</grid-header-call>
-            <grid-header-call>Должность</grid-header-call>
-            <grid-header-call>Телефон</grid-header-call>
+            <grid-header-call/>
+            <grid-header-call sort-column-name="id"
+                              sort-column-text="id"
+                              v-model:sort-direction="sort.id"
+                              @sort="onSort"
+            />
+            <grid-header-call sort-column-name="lastName"
+                              sort-column-text="Фамилия"
+                              v-model:sort-direction="sort.lastName"
+                              @sort="onSort"
+            />
+            <grid-header-call sort-column-name="name"
+                              sort-column-text="Имя"
+                              v-model:sort-direction="sort.name"
+                              @sort="onSort"
+            />
+            <grid-header-call sort-column-name="patronymic"
+                              sort-column-text="Отчество"
+                              v-model:sort-direction="sort.patronymic"
+                              @sort="onSort"
+            />
+            <grid-header-call sort-column-name="email"
+                              sort-column-text="email"
+                              v-model:sort-direction="sort.email"
+                              @sort="onSort"
+            />
+            <grid-header-call sort-column-name="position"
+                              sort-column-text="Должность"
+                              v-model:sort-direction="sort.position"
+                              @sort="onSort"
+            />
+            <grid-header-call sort-column-text="Телефон"/>
 
             <template v-for="user of users">
                 <hamburger-selector :items="[
@@ -76,11 +100,17 @@ import GridHeaderCall from "./Parts/GridHeaderCell.vue";
 export default {
     name: "UserList",
     components: {GridHeaderCall, GridRowCell, Search, HamburgerSelector, Loading},
+    props: {
+        useOnlyOneColumnToSort: {
+            type: Boolean,
+            default: true
+        },
+    },
 
     data() {
         return {
             isListLoading: true,
-
+            loadUsersTimeout: null,
             search: '',
             sort: {},
             users: []
@@ -91,33 +121,42 @@ export default {
         onSearch(search) {
             this.search = search;
 
-            this.loadUsers();
+            this.createLoadUsersRequest(500);
         },
 
-        onSort() {
+        onSort(columnName, direction) {
+            if (this.useOnlyOneColumnToSort) {
+                this.sort = {};
+            }
+            this.sort[columnName] = direction;
 
-
-            clearTimeout(this.applySortTimeout);
-            this.applySortTimeout = setTimeout(
-                () => {
-                    this.loadUsers()
-                },
-                500
-            )
+            this.createLoadUsersRequest(700)
         },
 
         onPaginate() {
 
         },
 
+        createLoadUsersRequest(milliseconds) {
+            clearTimeout(this.loadUsersTimeout);
+            this.loadUsersTimeout = setTimeout(
+                () => {
+                    this.loadUsers();
+                },
+                milliseconds
+            );
+        },
+
         async loadUsers() {
             this.isListLoading = true;
+
             this.users = await this.getUsers(
                 this.search,
                 this.sort,
                 0,
                 10
             );
+
             this.isListLoading = false;
         },
 

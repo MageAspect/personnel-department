@@ -84,6 +84,9 @@ class UserStore
             }
 
             foreach ($sort as $column => $direction) {
+                if ($column === 'lastName') {
+                    $column = 'last_name';
+                }
                 $q->orderBy($column, $direction);
             }
 

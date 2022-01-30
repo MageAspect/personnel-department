@@ -102,6 +102,5 @@
 
     .grid-rows-delimiter {
         @apply col-span-full border-b border-oceanic-lighter;
-
     }
 }

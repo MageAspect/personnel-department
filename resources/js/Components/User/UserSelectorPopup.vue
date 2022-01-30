@@ -5,7 +5,7 @@
                     <div class="absolute -top-12 -right-8"><i @click="closePopupTrigger()"
                                                               class="cursor-pointer text-2xl text-gray-light  fa-solid fa-xmark"></i>
                     </div>
-                    <search @search="searchUsers" v-model="search" class="mb-6 w-2/4"
+                    <search @search-input="onSearchInput" v-model="search" class="mb-6 w-2/4"
                             placeholder="Найти сотрудника..."></search>
                     <div v-if="this.searchedUsers.length > 0"
                          class="grid grid-col-users-list gap-y-6 ui-y-scroll min-h-19.25 max-h-96 px-2">
@@ -57,6 +57,14 @@ export default {
         userSelected(selectedUser) {
             this.$emit('selectUser', selectedUser);
             this.searchedUsers = this.searchedUsers.filter(user => user.id !== selectedUser.id)
+        },
+
+        onSearchInput(search) {
+            clearTimeout(this.searchInputTimeout);
+            this.searchInputTimeout = setTimeout(
+                () => {this.searchUsers(search)},
+                500
+            )
         },
 
         /**

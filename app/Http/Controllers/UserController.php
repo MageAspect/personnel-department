@@ -119,7 +119,7 @@ class UserController extends Controller
                 JSON_UNESCAPED_UNICODE);
         }
 
-        return response()->json($users->all(), 200, [], JSON_UNESCAPED_UNICODE);
+        return response()->json(array_values($users->all()), 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     protected function getProtectedSort(array $rawSort): array
