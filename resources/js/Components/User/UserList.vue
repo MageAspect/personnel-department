@@ -1,15 +1,16 @@
 <template>
     <search @search-input="onSearch" class="w-96 mb-8" placeholder="Найти пользователей"></search>
-    <div class="vld-parent w-fit">
-        <loading v-model:active="showLoader"
-                 :is-full-page="false"
-                 loader="spinner"
-                 color="#1976d2"
-                 background-color="rgba(0, 0, 0, 0.07)"
-                 :width="users.length < 2 ? 20 : 50"
-                 blur="0"
-        />
-        <div class="user-list-grid grid gap-y-6 w-fit">
+    <div class=" w-fit">
+        <div class="user-list-grid grid gap-y-6 w-fit vld-parent">
+            <loading v-model:active="isUsersLoading"
+                     :is-full-page="false"
+                     loader="spinner"
+                     color="#1976d2"
+                     background-color="rgba(0, 0, 0, 0.07)"
+                     :width="users.length < 2 ? 20 : 50"
+                     blur="0"
+            />
+
             <grid-header-call/>
             <grid-header-call sort-column-name="id"
                               sort-column-text="id"
@@ -70,6 +71,15 @@
                 <grid-row-cell>{{ user.phone }}</grid-row-cell>
             </template>
         </div>
+        <transition name="fade">
+            <grid-pagination v-if="initialLoadingInFinished"
+                             :is-page-change-disabled="isUsersLoading"
+                             :records-total-count="pagination.recordsTotalCount"
+                             :records-per-page="pagination.recordsPerPage"
+                             :current-page="pagination.currentPage"
+                             @change-page="changePage"
+            />
+        </transition>
     </div>
 </template>
 
@@ -96,24 +106,30 @@ import 'vue-loading-overlay/dist/vue-loading.css';
 import {User} from "./User.js";
 import GridRowCell from "./Parts/GridRowCell.vue";
 import GridHeaderCall from "./Parts/GridHeaderCell.vue";
+import GridPagination from "../UI/Pagination/GridPagination.vue";
 
 export default {
     name: "UserList",
-    components: {GridHeaderCall, GridRowCell, Search, HamburgerSelector, Loading},
-    props: {
-        useOnlyOneColumnToSort: {
-            type: Boolean,
-            default: true
-        },
-    },
+    components: {GridPagination, GridHeaderCall, GridRowCell, Search, HamburgerSelector, Loading},
 
     data() {
         return {
-            showLoader: true,
+            initialLoadingInFinished: false,
+
+            isUsersLoading: true,
             loadUsersTimeout: null,
+
+            useOnlyOneColumnToSort: true,
+
             search: '',
-            sort: {},
-            users: []
+            sort: {id: 'desc'},
+            users: [],
+
+            pagination: {
+                recordsPerPage: 15,
+                recordsTotalCount: 1,
+                currentPage: 1
+            }
         }
     },
 
@@ -133,8 +149,10 @@ export default {
             this.createLoadUsersRequest(700)
         },
 
-        onPaginate() {
+        changePage(pageNumber) {
+            this.pagination.currentPage = pageNumber;
 
+            this.createLoadUsersRequest(0);
         },
 
         createLoadUsersRequest(milliseconds) {
@@ -148,16 +166,19 @@ export default {
         },
 
         async loadUsers() {
-            this.showLoader = true;
+            this.isUsersLoading = true;
 
-            this.users = await this.getUsers(
+            let {users, total} = await this.getUsers(
                 this.search,
                 this.sort,
-                0,
-                10
+                this.pagination.recordsPerPage * (this.pagination.currentPage - 1),
+                this.pagination.recordsPerPage
             );
 
-            this.showLoader = false;
+            this.users = users;
+            this.pagination.recordsTotalCount = total;
+
+            this.isUsersLoading = false;
         },
 
         async getUsers(search = '', sort = [], offset = 0, limit = 10) {
@@ -177,11 +198,14 @@ export default {
                 users.push(User.fromJson(user));
             }
 
-            return users;
+            return {
+                users,
+                total: Number(response.headers['x-total-count'])
+            };
         },
 
         deleteUser(id) {
-            this.showLoader = true;
+            this.isUsersLoading = true;
 
             axios.delete(
                 `/users/${id}`
@@ -190,12 +214,15 @@ export default {
                     this.users = this.users.filter((user) => user.id !== id);
                 })
                 .catch(() => alert('Ошибка удаления пользователя'))
-                .finally(() => this.showLoader = false);
+                .finally(() => this.isUsersLoading = false);
         }
     },
 
     mounted() {
-        this.loadUsers();
+        this.loadUsers()
+            .finally(
+                () => {this.initialLoadingInFinished = true}
+            );
     }
 }
 </script>

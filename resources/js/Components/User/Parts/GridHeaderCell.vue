@@ -1,6 +1,6 @@
 <template>
-    <div class="uppercase text-gray-light text-sm pr-8">
-        <span :class="['flex', 'relative', 'w-fit', 'pr-4', {'cursor-pointer': showSort}]" @click="onSort()">
+    <div class="uppercase text-gray-light text-sm">
+        <span :class="['flex', 'relative', 'w-fit', 'px-4', {'cursor-pointer': showSort}]" @click="onSort()">
             {{ sortColumnText }}
             <i v-if="showSort"
                :class="['fa-solid', sortDirectionClass, 'absolute', 'right-0    ', 'top-2/4']"

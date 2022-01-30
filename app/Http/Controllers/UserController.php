@@ -95,36 +95,31 @@ class UserController extends Controller
         if (!empty($request->get('search'))) {
             $filter['find'] = $request->get('search');
         }
-        if (!empty($request->get('excludedIds'))) {
-            $filter['excludedIds'] = $request->get('excludedIds');
-        }
 
-        $sort = array();
-        if (!empty($request->get('sort'))) {
-            $sort = $this->getProtectedSort($request->get('sort'));
-        }
+        $filter['excludedIds'] = $request->get('excludedIds') ?: array();
 
-        $offset = 0;
-        if (!empty($request->get('offset'))) {
-            $offset = $request->get('offset');
-        }
+        $sort = $this->getProtectedSort($request->get('sort') ?: array());
 
-        $limit = 20;
-        if (!empty($request->get('limit'))) {
-            $limit = $request->get('limit');
-        }
+        $offset = $request->get('offset') ?: 0;
+        $limit = $request->get('limit') ?: 20;
 
         try {
             $users = $userStore->findUsers($filter, $sort, $offset, $limit);
+            $count = $userStore->findUsersCount($filter);
+
+            return response()->json(
+                array_values($users->all()),
+                200,
+                array('X-Total-Count' => $count),
+                JSON_UNESCAPED_UNICODE
+            );
         } catch (UserStoreException) {
             return response()->json(
-                ['message' => 'Не удалось получить список пользователей'],
+                array('message' => 'Не удалось получить список пользователей'),
                 500,
-                [],
+                array(),
                 JSON_UNESCAPED_UNICODE);
         }
-
-        return response()->json(array_values($users->all()), 200, [], JSON_UNESCAPED_UNICODE);
     }
 
     protected function getProtectedSort(array $rawSort): array

@@ -1,5 +1,5 @@
 <template>
-    <form class="group relative">
+    <form @submit.prevent class="group relative">
         <svg width="20" height="20" fill="currentColor"
              class="absolute left-3 top-1/2 -mt-2.5 text-gray-light
                     pointer-events-none

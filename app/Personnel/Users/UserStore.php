@@ -9,6 +9,7 @@ namespace App\Personnel\Users;
 
 use App\Models\User;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
@@ -68,20 +69,7 @@ class UserStore
 
             $q->selectRaw($selectSql, array($this->currentUser->id, $this->currentUser->id));
 
-            if (isset($filter['find'])) {
-                $q->withFind($filter['find']);
-                unset($filter['find']);
-            }
-
-            if (isset($filter['excludedIds'])) {
-                $q->whereNotIn('id', $filter['excludedIds']);
-                unset($filter['excludedIds']);
-            }
-
-            if (isset($filter['id'])) {
-                is_array($filter['id']) ? $q->whereIn('id', $filter['id'])
-                    : $q->where('id', $filter['id']);
-            }
+            $this->applyFindFilters($q, $filter);
 
             foreach ($sort as $column => $direction) {
                 if ($column === 'lastName') {
@@ -103,6 +91,26 @@ class UserStore
             return collect($usersEntities);
         } catch (Exception $e) {
             throw new UserStoreException('Failed to find users', 0, $e);
+        }
+    }
+
+    /**
+     * @param  array{find: string, id: int|array, excludedIds: array}  $filter
+     * @return int
+     * @throws UserStoreException
+     */
+    public function findUsersCount(array $filter): int
+    {
+        try {
+            $q = $this->currentUser::query();
+
+            $q->selectRaw('count(*) as count');
+
+            $this->applyFindFilters($q, $filter);
+
+            return  $q->first()->count;
+        } catch (Exception $e) {
+            throw new UserStoreException('Failed to find users count', 0, $e);
         }
     }
 
@@ -163,5 +171,22 @@ class UserStore
         $userEntity->canBeDeleted = $this->currentUser->can('delete', $user);
 
         return $userEntity;
+    }
+
+    protected function applyFindFilters(Builder $query, array $filter): void {
+        if (isset($filter['find'])) {
+            $query->withFind($filter['find']);
+            unset($filter['find']);
+        }
+
+        if (isset($filter['excludedIds'])) {
+            $query->whereNotIn('id', $filter['excludedIds']);
+            unset($filter['excludedIds']);
+        }
+
+        if (isset($filter['id'])) {
+            is_array($filter['id']) ? $query->whereIn('id', $filter['id'])
+                : $query->where('id', $filter['id']);
+        }
     }
 }
