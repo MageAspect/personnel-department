@@ -20,6 +20,7 @@
     "dependencies": {
         "@vuelidate/core": "^2.0.0-alpha.33",
         "@vuelidate/validators": "^2.0.0-alpha.26",
-        "vue": "^3"
+        "vue": "^3",
+        "vue-loading-overlay": "^5.0.3"
     }
 }

@@ -156,6 +156,9 @@ class UserStore
             $userEntity->salaryCanBeViewed = true;
         }
 
+        $userEntity->canBeUpdated = $this->currentUser->can('update', $user);
+        $userEntity->canBeDeleted = $this->currentUser->can('delete', $user);
+
         return $userEntity;
     }
 }

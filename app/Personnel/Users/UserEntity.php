@@ -21,6 +21,8 @@ class UserEntity
     public string $position = '';
     public ?int $salary = null;
     public bool $salaryCanBeViewed = false;
+    public bool $canBeUpdated = false;
+    public bool $canBeDeleted = false;
 
     public function getFormattedName(): string {
         return "$this->lastName $this->name";

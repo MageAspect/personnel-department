@@ -29,7 +29,7 @@
             </error>
         </template>
     </page-header>
-    <div class="p-6 pb-0">
+    <page-body>
         <error v-if="saveError" margin-bottom :message="saveError"></error>
 
         <div class="bg-oceanic-light p-6">
@@ -96,7 +96,7 @@
                 ></user-preview-in-grid>
             </div>
         </div>
-    </div>
+    </page-body>
     <transition name="bounce">
         <user-selector-popup v-if="isMemberSelectorPopupOpened()"
                              :close-popup-trigger="closeMemberSelectorPopup"
@@ -119,23 +119,27 @@
 @keyframes bounce-in {
     0% {
         transform: scale(0);
+        border-radius: 100px;
     }
     50% {
         transform: scale(1.25);
     }
     100% {
         transform: scale(1);
+        border-radius: 0;
     }
 }
 
 @keyframes bounce-out {
     0% {
         transform: scale(1);
-        opacity: 1
+        opacity: 1;
+        border-radius: 0;
     }
     100% {
         transform: scale(0);
-        opacity: 0
+        opacity: 0;
+        border-radius: 50%;
     }
 }
 
@@ -158,10 +162,11 @@ import useVuelidate from '@vuelidate/core'
 import {maxLength, minLength, required} from '@vuelidate/validators'
 import Error from "./Error.vue";
 import {Department} from "./Department.js";
+import PageBody from "../PageBody.vue";
 
 export default {
     name: "department-edit",
-    components: {Error, PageHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
+    components: {PageBody, Error, PageHeader, UserPreview, UserPreviewInGrid, UserSelectorPopup},
     props: {
         jsonDepartment: JSON,
         storeUrl: String,

@@ -5,7 +5,7 @@
                     <div class="absolute -top-12 -right-8"><i @click="closePopupTrigger()"
                                                               class="cursor-pointer text-2xl text-gray-light  fa-solid fa-xmark"></i>
                     </div>
-                    <search @input="onSearchInput" v-model="search" class="mb-6 w-2/4"
+                    <search @search="searchUsers" v-model="search" class="mb-6 w-2/4"
                             placeholder="Найти сотрудника..."></search>
                     <div v-if="this.searchedUsers.length > 0"
                          class="grid grid-col-users-list gap-y-6 ui-y-scroll min-h-19.25 max-h-96 px-2">
@@ -62,20 +62,6 @@ export default {
         /**
          * @param {String} search
          */
-        onSearchInput(search) {
-            if (search !== '' && search.length < 3) {
-                return;
-            }
-
-            clearTimeout(this.searchInputTimeout);
-            this.searchInputTimeout = setTimeout(() => {
-                this.searchUsers(search)
-            }, 500)
-        },
-
-        /**
-         * @param {String} search
-         */
         searchUsers(search) {
             axios.get(
                 this.findUsersUrl,
@@ -86,12 +72,8 @@ export default {
                     }
                 }
             ).then(response => {
-                if (!response.data.hasOwnProperty('users')) {
-                    return;
-                }
-
                 let searched = [];
-                for (let u of Object.values(response.data.users)) {
+                for (let u of Object.values(response.data)) {
                     searched.push(User.fromJson(u));
                 }
 

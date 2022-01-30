@@ -9,6 +9,9 @@ export class User {
     avatarPath;
     profileUrl;
     salary;
+    salaryCanBeViewed;
+    canBeDeleted;
+    canBeUpdated;
 
     /**
      *
@@ -27,6 +30,9 @@ export class User {
         u.avatarPath = obj.avatar ? obj.avatar : '/img/user/user-plug.svg';
         u.profileUrl = obj.profileUrl ? obj.profileUrl : '';
         u.salary = obj.salary ? obj.salary : null;
+        u.salaryCanBeViewed = obj.salaryCanBeViewed ? obj.salaryCanBeViewed : false;
+        u.canBeUpdated = obj.canBeUpdated ? obj.canBeUpdated : false;
+        u.canBeDeleted = obj.canBeDeleted ? obj.canBeDeleted : false;
 
         return u;
     }
@@ -44,6 +50,9 @@ export class User {
         cloned.avatarPath = this.avatarPath;
         cloned.profileUrl = this.profileUrl;
         cloned.salary = this.salary
+        cloned.salaryCanBeViewed = this.salaryCanBeViewed;
+        cloned.canBeUpdated = this.canBeUpdated;
+        cloned.canBeDeleted = this.canBeDeleted;
         return cloned;
     }
 }

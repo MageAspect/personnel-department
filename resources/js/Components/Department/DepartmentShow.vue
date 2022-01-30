@@ -12,7 +12,7 @@
             </a>
         </template>
     </page-header>
-    <div class="p-6 pb-0">
+    <page-body>
         <div class="bg-oceanic-light p-6">
             <div class="flex mb-6">
                 <div class="tracking-wider text-gray-light text-xl mr-3">Руководитель отдела</div>
@@ -41,7 +41,7 @@
                 ></user-preview-in-grid>
             </div>
         </div>
-    </div>
+    </page-body>
 </template>
 
 <script>
@@ -51,10 +51,11 @@ import UserPreview from "../User/UserPreview.vue";
 import PageHeader from "../PageHeader.vue";
 import {User} from "../User/User.js";
 import {Department} from "./Department.js";
+import PageBody from "../PageBody.vue";
 
 export default {
     name: "DepartmentShow",
-    components: {PageHeader, UserPreview, Error, UserPreviewInGrid},
+    components: {PageBody, PageHeader, UserPreview, Error, UserPreviewInGrid},
 
     props: {
         jsonDepartment: JSON,
