@@ -1,7 +1,7 @@
 <template>
     <search @search-input="onSearch" class="w-96 mb-8" placeholder="Найти пользователей"></search>
     <div class="vld-parent w-fit">
-        <loading v-model:active="isListLoading"
+        <loading v-model:active="showLoader"
                  :is-full-page="false"
                  loader="spinner"
                  color="#1976d2"
@@ -57,7 +57,7 @@
                     },
                     {
                         text: 'Удалить',
-                        link: `/users/`,
+                        clickHandler: this.deleteUser.bind(this, user.id),
                         classes: ['hover:text-red']
                     }
                 ]"/>
@@ -109,7 +109,7 @@ export default {
 
     data() {
         return {
-            isListLoading: true,
+            showLoader: true,
             loadUsersTimeout: null,
             search: '',
             sort: {},
@@ -148,7 +148,7 @@ export default {
         },
 
         async loadUsers() {
-            this.isListLoading = true;
+            this.showLoader = true;
 
             this.users = await this.getUsers(
                 this.search,
@@ -157,7 +157,7 @@ export default {
                 10
             );
 
-            this.isListLoading = false;
+            this.showLoader = false;
         },
 
         async getUsers(search = '', sort = [], offset = 0, limit = 10) {
@@ -178,6 +178,19 @@ export default {
             }
 
             return users;
+        },
+
+        deleteUser(id) {
+            this.showLoader = true;
+
+            axios.delete(
+                `/users/${id}`
+            )
+                .then(() => {
+                    this.users = this.users.filter((user) => user.id !== id);
+                })
+                .catch(() => alert('Ошибка удаления пользователя'))
+                .finally(() => this.showLoader = false);
         }
     },
 

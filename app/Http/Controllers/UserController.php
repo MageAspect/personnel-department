@@ -73,15 +73,20 @@ class UserController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return Response
-     */
-    public function destroy($id)
+    public function destroy(UserStore $userStore, int $id): JsonResponse
     {
-        //
+        try {
+            $userStore->delete($id);
+        } catch (UserStoreException $e) {
+            return response()->json(
+                array(
+                    'error' => $e->getMessage()
+                ),
+                500
+            );
+        }
+
+        return response()->json();
     }
 
     public function findUsers(UserStore $userStore, Request $request): JsonResponse

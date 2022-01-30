@@ -4,12 +4,21 @@
         <transition name="fade">
             <div v-if="isItemsOpened" ref="itemsListContainer"
                  class="absolute bg-oceanic-light text-sm text-gray-lighter z-50">
-                <a v-for="item of items"
-                   :class="[...item.classes, 'py-2', 'px-3', 'transition', 'border-b' , 'border-oceanic']"
-                   :href="item.link"
-                >
-                    {{ item.text }}
-                </a>
+                <template v-for="item of items">
+                    <a v-if="item.hasOwnProperty('link')"
+                        :class="[...item.classes, 'py-2', 'px-3', 'transition', 'border-b' , 'border-oceanic']"
+                        :href="item.link"
+                    >
+                        {{ item.text }}
+                    </a>
+                    <div v-else
+                       :class="[...item.classes, 'py-2', 'px-3', 'transition', 'border-b' , 'border-oceanic', 'cursor-pointer']"
+                       @click="item.clickHandler"
+                    >
+                        {{ item.text }}
+                    </div>
+                </template>
+
             </div>
         </transition>
     </div>
