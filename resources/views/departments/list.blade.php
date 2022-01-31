@@ -44,7 +44,7 @@
     <div class="grid p-6 grid-cols-departments gap-7">
         @foreach($departments as $department)
             <div class="border-oceanic-light border flex flex-col justify-between">
-                <div class="p-4">
+                <div class="p-4 pb-8">
                     <a href="{{ route('departments.show', ['department' => $department->id]) }}"
                        class="pb-2 border-b border-oceanic-light text-gray-light link-gray-light text-lg font-medium">
                         {{ $department->name }}
@@ -63,12 +63,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-base leading-5 text-gray-lighter">
+                    <div class="text-sm leading-6 text-gray-lighter">
                         {{ $department->description }}
                     </div>
                 </div>
                 @if ($department->canBeUpdated || $department->canBeDeleted)
-                    <div class="bg-oceanic-light p-1 flex justify-between text-2xs text-white ">
+                    <div class="bg-oceanic-light p-1 flex justify-between text-2xs text-gray-lightest ">
                         @if ($department->canBeUpdated)
                             <a href="{{ route('departments.edit', ['department' => $department->id]) }}"
                                class="p-2 uppercase font-medium hover:text-green transition">редактировать</a>
