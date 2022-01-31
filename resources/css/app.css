@@ -92,6 +92,14 @@
         border-radius: 20px;
     }
 
+    .hover-ui-shadow {
+        transition: 0.2s all ease-in-out;
+    }
+
+    .hover-ui-shadow:hover {
+        box-shadow: 0 1px 10px rgb(0 0 0 / 20%), 0 4px 5px rgb(0 0 0 / 12%), 0 2px 4px rgb(0 0 0 / 14%);
+    }
+
     .link-gray-light {
         @apply transition text-gray-light hover:text-gray-lightest
     }

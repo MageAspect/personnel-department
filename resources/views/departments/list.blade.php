@@ -43,7 +43,7 @@
     </page-header>
     <div class="grid p-6 grid-cols-departments gap-7">
         @foreach($departments as $department)
-            <div class="border-oceanic-light border flex flex-col justify-between">
+            <div class="border-oceanic-light border flex flex-col justify-between hover-ui-shadow">
                 <div class="p-4 pb-8">
                     <a href="{{ route('departments.show', ['department' => $department->id]) }}"
                        class="pb-2 border-b border-oceanic-light text-gray-light link-gray-light text-lg font-medium">

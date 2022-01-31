@@ -1,5 +1,5 @@
 <template>
-    <div class="w-full flex justify-center py-4">
+    <div v-if="pagesCount > 1" class="w-full flex justify-center py-4">
         <div class="flex items-center">
             <template v-for="pageNumber in pagesCount">
                 <button v-if="pageNumber !== currentPage"
