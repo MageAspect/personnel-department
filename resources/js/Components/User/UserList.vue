@@ -11,38 +11,38 @@
                      blur="0"
             />
 
-            <grid-header-call/>
-            <grid-header-call sort-column-name="id"
+            <grid-header-cell/>
+            <grid-header-cell sort-column-name="id"
                               sort-column-text="id"
                               v-model:sort-direction="sort.id"
                               @sort="onSort"
             />
-            <grid-header-call sort-column-name="lastName"
+            <grid-header-cell sort-column-name="lastName"
                               sort-column-text="Фамилия"
                               v-model:sort-direction="sort.lastName"
                               @sort="onSort"
             />
-            <grid-header-call sort-column-name="name"
+            <grid-header-cell sort-column-name="name"
                               sort-column-text="Имя"
                               v-model:sort-direction="sort.name"
                               @sort="onSort"
             />
-            <grid-header-call sort-column-name="patronymic"
+            <grid-header-cell sort-column-name="patronymic"
                               sort-column-text="Отчество"
                               v-model:sort-direction="sort.patronymic"
                               @sort="onSort"
             />
-            <grid-header-call sort-column-name="email"
+            <grid-header-cell sort-column-name="email"
                               sort-column-text="email"
                               v-model:sort-direction="sort.email"
                               @sort="onSort"
             />
-            <grid-header-call sort-column-name="position"
+            <grid-header-cell sort-column-name="position"
                               sort-column-text="Должность"
                               v-model:sort-direction="sort.position"
                               @sort="onSort"
             />
-            <grid-header-call sort-column-text="Телефон"/>
+            <grid-header-cell sort-column-text="Телефон"/>
 
             <template v-for="user of users">
                 <hamburger-selector :items="[
@@ -52,7 +52,7 @@
                         classes: ['hover:text-gray-light']
                     },
                     {
-                        text: 'Изменить',
+                        text: 'Редактировать',
                         link: `/users/${user.id}/edit`,
                         classes: ['hover:text-green']
                     },
@@ -105,12 +105,12 @@ import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import {User} from "./User.js";
 import GridRowCell from "./Parts/GridRowCell.vue";
-import GridHeaderCall from "./Parts/GridHeaderCell.vue";
+import GridHeaderCell from "./Parts/GridHeaderCell.vue";
 import GridPagination from "../UI/Pagination/GridPagination.vue";
 
 export default {
     name: "UserList",
-    components: {GridPagination, GridHeaderCall, GridRowCell, Search, HamburgerSelector, Loading},
+    components: {GridPagination, GridHeaderCell, GridRowCell, Search, HamburgerSelector, Loading},
 
     data() {
         return {

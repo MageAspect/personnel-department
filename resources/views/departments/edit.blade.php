@@ -16,12 +16,7 @@ $error = $error ?? null;
 @extends('layouts.app')
 
 @section('content')
-    @if(!$error)
-    <department-edit
-        find-users-url="{{ route('users.find') }}"
-        :json-department='@json($department, JSON_UNESCAPED_UNICODE)'>
-    </department-edit>
-    @else
+    @if($error)
         <page-header class="bg-oce" title="Редактирование отдела">
             <template v-slot:icon>
                 <i class="fas fa-layer-group"></i>
@@ -32,7 +27,13 @@ $error = $error ?? null;
                 </a>
             </template>
         </page-header>
-        <error class="m-6 p-6 bg-oceanic-light" message="Недостаточно прав для редактирования отдела"></error>
+        <error class="m-6 p-6 bg-oceanic-light" message="{{ $error }}"></error>
+    @else
+        <department-edit
+            find-users-url="{{ route('users.find') }}"
+            :json-department='@json($department, JSON_UNESCAPED_UNICODE)'>
+        </department-edit>
+
     @endif
 @endsection
 

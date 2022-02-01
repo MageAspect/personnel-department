@@ -21,7 +21,7 @@
 
 <script>
 export default {
-    name: "GridHeaderCall",
+    name: "GridHeaderCell",
     emits: ['sort', 'update:sortDirection'],
     props: {
         sortDirection: {
