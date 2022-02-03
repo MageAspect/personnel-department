@@ -1,13 +1,116 @@
 <template>
+    <page-header ref="pageHeader" :title="title">
+        <template v-slot:icon>
+            <i class="fas fa-user-friend"></i>
+        </template>
+        <template v-slot:buttons>
+            <a href="/users/" class="btn btn-light mr-4">
+                <span>К списку</span>
+            </a>
+            <a v-if="isViewMode()" :href="editHref" class="btn btn-primary">
+                <span>Редактировать</span>
+            </a>
+            <button v-else @click="sendSaveEvent()" class="btn btn-success">
+                <span>Сохранить</span>
+            </button>
+        </template>
+    </page-header>
 
+    <page-body ref="pageBody" class="vld-parent">
+        <loading v-model:active="isUserLoading"
+                 :is-full-page="false"
+                 loader="spinner"
+                 color="#1976d2"
+                 background-color="none"
+                 :width="60"
+                 blur="0"
+        />
+        <user-details v-if="userId > 0"
+                      ref="userDetails"
+                      :user-id="userId"
+                      :edit="this.edit"
+                      @user-load="onUserLoaded"/>
+        <user-details v-else/>
+    </page-body>
 </template>
 
 <script>
+import PageHeader from "../Components/PageHeader.vue";
+import Loading from 'vue-loading-overlay';
+import 'vue-loading-overlay/dist/vue-loading.css';
+import PageBody from "../Components/PageBody.vue";
+import UserDetails from "../Components/User/UserDetails.vue";
+import {User} from "../Components/User/User.js";
+import {ElementBoundingRect} from "../Services/Element/ElementBoundingRect.js";
+
 export default {
-    name: "UserDetailsPage"
+    name: "UserDetailsPage",
+    components: {UserDetails, PageBody, PageHeader, Loading},
+
+    props: {
+        edit: {
+            type: Boolean,
+            default: false
+        },
+        userId: Number,
+    },
+
+    data() {
+        return {
+            isUserLoading: true,
+            user: new User()
+        };
+    },
+
+    computed: {
+        title: function () {
+            if (this.isEditMode()) {
+                return `Редактирование пользователя: ${this.user.getFullName()}`;
+            }
+            if (this.isCreateMode()) {
+                return 'Добавление пользователя';
+            }
+
+            return `Просмотр пользователя: ${this.user.getFullName()}`;
+        },
+
+        editHref: function () {
+            return `/users/${this.userId}/edit`;
+        }
+    },
+
+    methods: {
+        isEditMode() {
+            return this.edit && this.userId > 0;
+        },
+
+        isCreateMode() {
+            return this.edit && this.userId <= 0;
+        },
+
+        isViewMode() {
+            return !this.edit;
+        },
+
+        /** @param {User} user */
+        onUserLoaded(user) {
+            this.user = user;
+            this.isUserLoading = false;
+        },
+
+        sendSaveEvent() {
+            this.$refs.userDetails.save();
+        }
+    },
+
+    mounted() {
+        let headerHeight = this.$refs.pageHeader.$el.offsetHeight;
+        let pageElemBounding = new ElementBoundingRect(this.$refs.pageBody.$el.parentElement);
+
+        let pageBodyHeight = pageElemBounding.getOnlyHeight() - headerHeight;
+
+        this.$refs.pageBody.$el.style.minHeight = pageBodyHeight + 'px';
+    }
 }
 </script>
 
-<style scoped>
-
-</style>

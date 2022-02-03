@@ -1,17 +1,17 @@
 export class User {
-    id;
-    name;
-    lastName;
-    patronymic;
-    email;
-    phone;
-    position;
-    avatarPath;
-    profileUrl;
-    salary;
-    salaryCanBeViewed;
-    canBeDeleted;
-    canBeUpdated;
+    id = 0;
+    name = '';
+    lastName = '';
+    patronymic = '';
+    email = '';
+    phone = '';
+    position = '';
+    avatarPath = '';
+    profileUrl = '';
+    salary = 0;
+    salaryCanBeViewed = false;
+    canBeDeleted = false;
+    canBeUpdated = false;
 
     /**
      *
@@ -35,6 +35,10 @@ export class User {
         u.canBeDeleted = obj.canBeDeleted ? obj.canBeDeleted : false;
 
         return u;
+    }
+
+    getFullName() {
+        return `${this.lastName} ${this.name}`;
     }
 
     clone() {
