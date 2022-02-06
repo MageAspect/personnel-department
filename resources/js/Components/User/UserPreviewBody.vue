@@ -1,11 +1,11 @@
 <template>
     <div class="w-13 h-13 shrink-0 rounded-50% overflow-hidden">
         <div class="w-inherit h-inherit bg-no-repeat bg-center bg-cover"
-             :style="avatarStyles"></div>
+             :style="{'background-image': `url(${avatarPath})`}"></div>
     </div>
 
     <div class="ml-4 font-medium">
-        <a :href="user.profileUrl" class="mb-1 link-gray-light text-base">{{ fullName }}</a>
+        <a :href="user.profileUrl" class="mb-1 link-gray-light text-base">{{ user.getFullName() }}</a>
         <div class="text-gray text-xs">{{ user.position }}</div>
     </div>
 
@@ -29,13 +29,8 @@ export default {
         user: User,
     },
     computed: {
-        avatarStyles: function () {
-            return {
-                backgroundImage: `url('${this.user.avatarPath}')`
-            };
-        },
-        fullName: function () {
-            return `${this.user.lastName} ${this.user.name}`;
+        avatarPath() {
+            return this.user.avatarPath ? this.user.avatarPath : User.getDefaultAvatarPath();
         },
     }
 }

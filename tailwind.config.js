@@ -50,6 +50,7 @@ module.exports = {
                 'full-screen': '100vh',
                 'inherit': 'inherit',
                 '13': '3.25rem',
+                '84': '21rem'
             },
             maxHeight: {
                 '70': '17.5rem',

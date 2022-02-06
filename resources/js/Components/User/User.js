@@ -20,14 +20,14 @@ export class User {
      */
     static fromJson(obj) {
         let u = new User();
-        u.id = obj.id;
+        u.id = obj?.id;
         u.name = obj.name ? obj.name : '';
         u.lastName = obj.lastName ? obj.lastName : '';
         u.patronymic = obj.patronymic ? obj.patronymic : '';
         u.phone = obj.phone ? obj.phone : '';
         u.email = obj.email ? obj.email : '';
         u.position = obj.position ? obj.position : '';
-        u.avatarPath = obj.avatar ? obj.avatar : '/img/user/user-plug.svg';
+        u.avatarPath = obj.avatar ? obj.avatar : '';
         u.profileUrl = obj.profileUrl ? obj.profileUrl : '';
         u.salary = obj.salary ? obj.salary : null;
         u.salaryCanBeViewed = obj.salaryCanBeViewed ? obj.salaryCanBeViewed : false;
@@ -58,5 +58,9 @@ export class User {
         cloned.canBeUpdated = this.canBeUpdated;
         cloned.canBeDeleted = this.canBeDeleted;
         return cloned;
+    }
+
+    static getDefaultAvatarPath() {
+        return '/img/user/user-plug.svg';
     }
 }

@@ -1,7 +1,7 @@
 <template>
     <page-header ref="pageHeader" :title="title">
         <template v-slot:icon>
-            <i class="fas fa-user-friend"></i>
+            <i class="fas fa-user"></i>
         </template>
         <template v-slot:buttons>
             <a href="/users/" class="btn btn-light mr-4">
@@ -17,22 +17,35 @@
     </page-header>
 
     <page-body ref="pageBody" class="vld-parent">
-        <loading v-model:active="isUserLoading"
-                 :is-full-page="false"
-                 loader="spinner"
-                 color="#1976d2"
-                 background-color="none"
-                 :width="60"
-                 blur="0"
-        />
-        <user-details v-if="userId > 0"
-                      ref="userDetails"
-                      :user-id="userId"
-                      :edit="this.edit"
-                      @user-load="onUserLoaded"/>
-        <user-details v-else/>
+        <transition name="fade">
+            <loading v-model:active="isUserLoading"
+                     :is-full-page="false"
+                     loader="spinner"
+                     color="#1976d2"
+                     background-color="none"
+                     :width="60"
+                     blur="0"
+            />
+        </transition>
+        <transition name="fade">
+            <user-details v-show="!isUserLoading"
+                          ref="userDetails"
+                          :user-id="userId"
+                          :edit="this.edit"
+                          @user-load="onUserLoaded"/>
+        </transition>
     </page-body>
 </template>
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.3s;
+}
+
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
+}
+</style>
 
 <script>
 import PageHeader from "../Components/PageHeader.vue";
