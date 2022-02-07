@@ -29,6 +29,7 @@
                 <transition name="fade">
                     <drag-and-drop-file-popup v-if="isDragAndDropPopupShowed"
                                               :close-popup-trigger="closeDragAndDropPopup"
+                                              @selectFile="updateAvatar"
                     />
                 </transition>
             </profile-block>
@@ -62,19 +63,19 @@
 <script>
 import {User} from "./User.js";
 import ProfileBlock from "./Parts/ProfileBlock.vue";
-import DragAndDrop from "../UI/File/DragAndDrop.vue";
 import DragAndDropFilePopup from "../UI/Popup/DragAndDropFilePopup.vue";
 
 export default {
     name: "UserDetails",
-    components: {DragAndDropFilePopup, DragAndDrop, ProfileBlock},
+    components: {DragAndDropFilePopup, ProfileBlock},
     emits: ['userLoad'],
 
     data() {
         return {
             user: User.fromJson({avatar: '/img/user/user.jpg'}),
             isDragAndDropPopupShowed: false,
-            isOpenDragAndDropPopupButtonShowed: false
+            isOpenDragAndDropPopupButtonShowed: false,
+            userUpdatedAvatar: null,
         }
     },
 
@@ -104,6 +105,23 @@ export default {
 
         hideOpenPopupButton() {
             this.isOpenDragAndDropPopupButtonShowed = false;
+        },
+
+        /**
+         * @param {File} file
+         */
+        updateAvatar(file) {
+            this.userUpdatedAvatar = file;
+
+            const reader = new FileReader();
+
+            let onLoaded = (e) => {
+                this.user.avatarPath = e.target.result;
+                reader.removeEventListener('lead', onLoaded);
+            }
+            reader.addEventListener('load', onLoaded);
+
+            reader.readAsDataURL(file);
         }
     },
 

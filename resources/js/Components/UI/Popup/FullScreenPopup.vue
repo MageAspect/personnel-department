@@ -1,5 +1,5 @@
 <template>
-    <div class="fixed top-0 left-0 bg-popup w-full-screen h-full-screen">
+    <div class="fixed top-0 left-0 bg-popup w-full-screen h-full-screen z-50">
         <div class="w-full h-full flex items-center justify-center">
             <div v-if="initialized" class="bg-oceanic-light w-fit pt-10 pb-8 px-8 min-w-182.25 relative">
                 <div class="absolute -top-12 -right-8">
