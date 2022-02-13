@@ -8,5 +8,5 @@
 @extends('layouts.app')
 
 @section('content')
-    <user-details-page :edit="false" :user-id="{{ $userId }}"/>
+    <user-details-page :edit-mode="false" :user-id="{{ $userId }}"/>
 @endsection

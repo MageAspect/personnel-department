@@ -76,7 +76,6 @@ export default {
     },
 
     created() {
-        console.log(this.jsonDepartment)
         this.department = Department.fromJson(this.jsonDepartment);
     }
 }

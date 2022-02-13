@@ -33,16 +33,30 @@
                     />
                 </transition>
             </profile-block>
-            <profile-block title="Основная информация">
-                123
+            <profile-block title="Состоит в отделах:">
+                <department-preview v-for="department of userDepartments" :department="department" />
             </profile-block>
         </div>
         <div>
             <profile-block title="Основная информация">
-                123
+                <named-field :edit-mode="editMode" class="mt-5" name="Фамилия" v-model:value="user.lastName"/>
+                <named-field :edit-mode="editMode" class="mt-5" name="Имя" v-model:value="user.name"/>
+                <named-field :edit-mode="editMode" class="mt-5" name="Отчество" v-model:value="user.patronymic"/>
+                <named-field :edit-mode="editMode" class="mt-5" name="Email" v-model:value="user.email"/>
+                <named-field :edit-mode="editMode" class="mt-5" name="Должность" v-model:value="user.position"/>
+                <named-field :edit-mode="editMode" v-if="user.salaryCanBeViewed" class="mt-5" name="Оклад в рублях"
+                             v-model:value="user.salary"/>
+                <named-field :edit-mode="editMode" class="mt-5" name="Телефон" v-model:value="user.phone"/>
+            </profile-block>
+            <profile-block v-if="editMode" title="Смена пароля">
+                <named-field :edit-mode="true" class="mt-5" name="Текущий пароль" v-model:value="user.lastName"/>
+                <named-field :edit-mode="true" class="mt-5" name="Новый пароль" v-model:value="user.lastName"/>
+                <named-field :edit-mode="true" class="mt-5" name="Подтверждение нового пароля"
+                             v-model:value="user.lastName"/>
+            </profile-block>
+            <profile-block class="mb-0" title="Журнал продвижения по службе">
             </profile-block>
         </div>
-
     </div>
 </template>
 
@@ -62,17 +76,27 @@
 
 <script>
 import {User} from "./User.js";
+import {Department} from "../Department/Department.js";
 import ProfileBlock from "./Parts/ProfileBlock.vue";
 import DragAndDropFilePopup from "../UI/Popup/DragAndDropFilePopup.vue";
+import NamedField from "../UI/Field/NamedField.vue";
+import DepartmentPreview from "./Parts/DepartmentPreview.vue";
 
 export default {
     name: "UserDetails",
-    components: {DragAndDropFilePopup, ProfileBlock},
-    emits: ['userLoad'],
+    components: {DepartmentPreview, NamedField, DragAndDropFilePopup, ProfileBlock},
+    props: {
+        editMode: {
+            type: Boolean,
+            required: true
+        }
+    },
+    emits: ['profileLoad'],
 
     data() {
         return {
             user: User.fromJson({avatar: '/img/user/user.jpg'}),
+            userDepartments: [],
             isDragAndDropPopupShowed: false,
             isOpenDragAndDropPopupButtonShowed: false,
             userUpdatedAvatar: null,
@@ -122,13 +146,15 @@ export default {
             reader.addEventListener('load', onLoaded);
 
             reader.readAsDataURL(file);
-        }
+        },
+
+        loadUser() {}
     },
 
     mounted() {
         setTimeout(
             () => {
-                this.$emit('userLoad', new User())
+                this.$emit('profileLoad', new User())
             },
             300
         );

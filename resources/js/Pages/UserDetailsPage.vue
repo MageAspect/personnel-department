@@ -31,7 +31,7 @@
             <user-details v-show="!isUserLoading"
                           ref="userDetails"
                           :user-id="userId"
-                          :edit="this.edit"
+                          :edit-mode="this.editMode"
                           @user-load="onUserLoaded"/>
         </transition>
     </page-body>
@@ -61,7 +61,7 @@ export default {
     components: {UserDetails, PageBody, PageHeader, Loading},
 
     props: {
-        edit: {
+        editMode: {
             type: Boolean,
             default: false
         },
@@ -94,15 +94,15 @@ export default {
 
     methods: {
         isEditMode() {
-            return this.edit && this.userId > 0;
+            return this.editMode && this.userId > 0;
         },
 
         isCreateMode() {
-            return this.edit && this.userId <= 0;
+            return this.editMode && this.userId <= 0;
         },
 
         isViewMode() {
-            return !this.edit;
+            return !this.editMode;
         },
 
         /** @param {User} user */
