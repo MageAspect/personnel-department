@@ -67,6 +67,29 @@ class DepartmentStore
     /**
      * @throws DepartmentStoreException
      */
+    public function findUserDepartments(int $userId): Collection {
+        try {
+            $q = $this->department::query();
+            $q->select('*');
+            $q->with('head');
+
+            $q->whereHas('members', function($q) use($userId) {
+                $q->whereIn('user_id', array($userId));
+            });
+
+            $q->orWhere('head_id', $userId);
+
+            $departments = $q->get();
+
+            return $this->collectDepartmentsEntities($departments->all());
+        } catch (Exception $e) {
+            throw new DepartmentStoreException('Не удалось получить отделы пользователя', 0 ,$e);
+        }
+    }
+
+    /**
+     * @throws DepartmentStoreException
+     */
     public function findById(int $id): DepartmentEntity
     {
         try {

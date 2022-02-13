@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CareerJournalEntry extends Model
+class SqlHistory extends Model
 {
     use HasFactory;
 
-    protected $table = 'users_career_journal';
+    protected $table = 'sql_query_history';
 }

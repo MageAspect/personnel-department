@@ -9,6 +9,7 @@ use App\Jobs\SendResetPasswordLink;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -17,12 +18,12 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function showLoginForm()
+    public function showLoginForm(): View
     {
         return view('auth.login');
     }
 
-    public function processLoginForm(LoginRequest $request)
+    public function processLoginForm(LoginRequest $request): RedirectResponse
     {
         $authAttempt = [
             'email' => $request->get('email'),
@@ -38,12 +39,12 @@ class AuthController extends Controller
         ])->withInput();
     }
 
-    public function showForgotPasswordForm()
+    public function showForgotPasswordForm(): View
     {
         return view('auth.forgot-password', ['mailSent' => !empty(session('mail-sent'))]);
     }
 
-    public function processForgotPasswordForm(ForgotPasswordRequest $request)
+    public function processForgotPasswordForm(ForgotPasswordRequest $request): RedirectResponse
     {
         $status = Password::sendResetLink(
             ['email' => $request->get('email')],
@@ -67,7 +68,7 @@ class AuthController extends Controller
         return back()->with('mail-sent', true)->withInput();
     }
 
-    public function showResetPasswordForm(Request $request, string $token)
+    public function showResetPasswordForm(Request $request, string $token): View|RedirectResponse
     {
         if (!$this->isValidReset($request->get('email'), $token)) {
             return redirect()->route('auth.forgot-password');
@@ -83,7 +84,7 @@ class AuthController extends Controller
         );
     }
 
-    public function processResetPasswordForm(ResetPasswordRequest $request)
+    public function processResetPasswordForm(ResetPasswordRequest $request): RedirectResponse
     {
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),

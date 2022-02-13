@@ -72,7 +72,7 @@ class DepartmentController extends Controller
         } catch (DepartmentStoreException $e) {
             return response()->json(
                 array('error' => $e->getMessage()),
-                500
+                 500
             );
         }
 
@@ -122,6 +122,27 @@ class DepartmentController extends Controller
         }
 
         return back();
+    }
+
+    public function findUserDepartments(DepartmentStore $departmentStore, int $userId): JsonResponse
+    {
+        try {
+            $departments = $departmentStore->findUserDepartments($userId);
+
+            return response()->json(
+                array_values($departments->toArray()),
+                200,
+                array(),
+                JSON_UNESCAPED_UNICODE
+            );
+        } catch (DepartmentStoreException $e) {
+            return response()->json(
+                array('error' => $e->getMessage()),
+                500,
+                array(),
+                JSON_UNESCAPED_UNICODE 
+            );
+        }
     }
 
     protected function createFromRequest(Request $request): DepartmentEntity

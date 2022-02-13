@@ -50,7 +50,14 @@ Route::post(
 )->name('auth.reset-password-process');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get(
+        '/departments/find-user-departments/{userId}',
+        array(DepartmentController::class, 'findUserDepartments')
+    );
     Route::resource('departments', DepartmentController::class);
+
+    Route::get('/users/find-career-journal/{userId}', array(UserController::class, 'findUserCareerJournal'));
+
     Route::match(
         array(
             'GET',

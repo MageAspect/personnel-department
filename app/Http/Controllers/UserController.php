@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Personnel\Users\Journal\CareerJournalException;
+use App\Personnel\Users\Journal\CareerJournalStore;
+use App\Personnel\Users\UserNotFoundException;
 use App\Personnel\Users\UserStore;
 use App\Personnel\Users\UserStoreException;
 use Illuminate\Contracts\View\View;
@@ -76,6 +79,25 @@ class UserController extends Controller
         } catch (UserStoreException) {
             return response()->json(
                 array('message' => 'Не удалось получить список пользователей'),
+                500,
+                array(),
+                JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function findUserCareerJournal(CareerJournalStore $journalStore, int $userId): JsonResponse {
+        try {
+            $journal = $journalStore->findJournal($userId);
+
+            return response()->json(
+                array_values($journal->all()),
+                200,
+                array(),
+                JSON_UNESCAPED_UNICODE
+            );
+        } catch (CareerJournalException) {
+            return response()->json(
+                array('message' => 'Не удалось получить Журнал пользователя'),
                 500,
                 array(),
                 JSON_UNESCAPED_UNICODE);
