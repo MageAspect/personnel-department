@@ -28,11 +28,11 @@
             />
         </transition>
         <transition name="fade">
-            <user-details v-show="!isUserLoading"
+            <user-profile v-show="!isUserLoading"
                           ref="userDetails"
                           :user-id="userId"
                           :edit-mode="this.editMode"
-                          @user-load="onUserLoaded"/>
+                          @profile-load="onUserLoaded"/>
         </transition>
     </page-body>
 </template>
@@ -52,13 +52,13 @@ import PageHeader from "../Components/PageHeader.vue";
 import Loading from 'vue-loading-overlay';
 import 'vue-loading-overlay/dist/vue-loading.css';
 import PageBody from "../Components/PageBody.vue";
-import UserDetails from "../Components/User/UserDetails.vue";
+import UserProfile from "../Components/User/UserProfile.vue";
 import {User} from "../Components/User/User.js";
 import {ElementBoundingRect} from "../Services/Element/ElementBoundingRect.js";
 
 export default {
-    name: "UserDetailsPage",
-    components: {UserDetails, PageBody, PageHeader, Loading},
+    name: "UserProfilePage",
+    components: {UserProfile, PageBody, PageHeader, Loading},
 
     props: {
         editMode: {

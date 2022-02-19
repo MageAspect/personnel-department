@@ -1,7 +1,7 @@
 <template>
     <div class="mb-4 bg-oceanic flex flex-col justify-between">
         <div class="p-4">
-            <a href="{{departmentLink}}"
+            <a :href="departmentLink"
                class="pb-2 border-b border-oceanic-light text-gray-light link-gray-light text-lg font-medium">
                 {{ department.name }}
             </a>
@@ -11,7 +11,7 @@
                          :style="{'background-image': `url(${headAvatarPath}`}"></div>
                 </div>
                 <div class="ml-4 font-medium">
-                    <a href="{{headLink}}" class="mb-1 link-gray-light text-base">
+                    <a :href="headLink" class="mb-1 link-gray-light text-base">
                         {{ department.head.getFullName() }}
                     </a>
                     <div class="text-gray text-xs">{{ department.head.position }}</div>
@@ -41,7 +41,9 @@ export default {
         },
 
         headAvatarPath() {
-            return this.head.avatarPath ? this.head.avatarPath : User.getDefaultAvatarPath()
+            return this.department.head.avatarPath
+                ? this.department.head.avatarPath
+                : User.getDefaultAvatarPath()
         }
     }
 }

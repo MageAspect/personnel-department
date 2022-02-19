@@ -8,5 +8,5 @@
 @extends('layouts.app')
 
 @section('content')
-    <user-details-page :edit="true"/>
+    <user-profile-page :edit-mode="true"/>
 @endsection

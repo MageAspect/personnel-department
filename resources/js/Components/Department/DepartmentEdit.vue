@@ -175,6 +175,10 @@ export default {
         findUsersUrl: String,
     },
 
+    setup() {
+        return {v$: useVuelidate()}
+    },
+
     methods: {
         openMemberSelectorPopup() {
             this.memberSelectorPopup.opened = true;
@@ -271,10 +275,6 @@ export default {
 
     created() {
         this.department = Department.fromJson(this.jsonDepartment);
-    },
-
-    setup() {
-        return {v$: useVuelidate()}
     },
 
     data() {

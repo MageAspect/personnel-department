@@ -36,12 +36,10 @@ class CareerJournalStore
     public function addRecord(int $userId, int $departmentId, int $salary, string $position): void
     {
         try {
-            $department = $this->department::query()->findOrFail($departmentId);
 
             $newRecord = array(
                 'user_id' => $userId,
                 'department_id' => $departmentId,
-                'department_name' => $department->name,
                 'salary' => $salary,
                 'position' => $position,
             );
@@ -83,6 +81,7 @@ class CareerJournalStore
                 if ($user->salaryCanBeViewed) {
                     $r->salary = $record->salary;
                 }
+                $r->departmentName = $record->department->name;
                 $r->position = $record->position;
                 $r->startedAt = $record->started_at;
                 $r->endedAt = $record->ended_at;

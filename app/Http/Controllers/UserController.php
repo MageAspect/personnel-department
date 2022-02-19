@@ -85,6 +85,31 @@ class UserController extends Controller
         }
     }
 
+    public function findById(UserStore $userStore, int $id): JsonResponse {
+        try {
+            $user = $userStore->findById($id);
+
+            return response()->json(
+                $user,
+                200,
+                array(),
+                JSON_UNESCAPED_UNICODE
+            );
+        } catch (UserNotFoundException) {
+            return response()->json(
+                array(),
+                204,
+                array(),
+                JSON_UNESCAPED_UNICODE);
+        } catch (UserStoreException $e) {
+            return response()->json(
+                array('error' => $e->getMessage()),
+                500,
+                array(),
+                JSON_UNESCAPED_UNICODE);
+        }
+    }
+
     public function findUserCareerJournal(CareerJournalStore $journalStore, int $userId): JsonResponse {
         try {
             $journal = $journalStore->findJournal($userId);

@@ -21,6 +21,7 @@ export class Department {
 
         d.members = [];
         for (let memberObj of Object.values(obj.members)) {
+            console.log(memberObj);
             d.members.push(User.fromJson(memberObj));
         }
 

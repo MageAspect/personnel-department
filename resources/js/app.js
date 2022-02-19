@@ -6,7 +6,9 @@ import PageHeader from "./Components/PageHeader.vue";
 import DepartmentShow from "./Components/Department/DepartmentShow.vue";
 import Error from "./Components/Department/Error.vue";
 import UserListPage from "./Pages/UserListPage.vue";
-import UserDetailsPage from "./Pages/UserDetailsPage.vue";
+import UserDetailsPage from "./Pages/UserProfilePage.vue";
+import Maska from "maska";
+
 
 require('./bootstrap');
 
@@ -22,6 +24,7 @@ app.component(UserDetailsPage.name, UserDetailsPage);
 app.component(DepartmentEdit.name, DepartmentEdit);
 app.component(DepartmentShow.name, DepartmentShow);
 
+app.use(Maska);
 app.mount('#app');
 
 

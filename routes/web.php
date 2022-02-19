@@ -58,6 +58,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/users/find-career-journal/{userId}', array(UserController::class, 'findUserCareerJournal'));
 
+    Route::get('/users/find/{userId}', array(UserController::class, 'findById'));
+
     Route::match(
         array(
             'GET',
