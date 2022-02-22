@@ -13,6 +13,8 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 
 class UserController extends Controller
@@ -43,6 +45,10 @@ class UserController extends Controller
     {
         $u = $this->getFromRequest($request);
 
+        if ($request->hasFile('avatar')) {
+            $u->avatar = $this->uploadAvatar($request->file('avatar'));
+        }
+
         $password = $request->get('newPassword');
 
         return response()->json(
@@ -54,6 +60,10 @@ class UserController extends Controller
     {
         $u = $this->getFromRequest($request);
         $u->id = $id;
+
+        if ($request->hasFile('avatar')) {
+            $u->avatar = $this->uploadAvatar($request->file('avatar'));
+        }
 
         $userStore->update($u);
 
@@ -193,5 +203,9 @@ class UserController extends Controller
         $u->salary = $request->get('salary');
 
         return $u;
+    }
+
+    protected function uploadAvatar(UploadedFile $avatar): string {
+        return $avatar->storePublicly('avatars', array('disk' => 'public'));
     }
 }

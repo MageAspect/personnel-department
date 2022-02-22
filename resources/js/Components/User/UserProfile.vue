@@ -334,7 +334,7 @@ export default {
                 formData.append('newPassword', this.newPassword);
             }
             if (this.updatedAvatar) {
-                formData.append('updatedAvatar', this.updatedAvatar);
+                formData.append('avatar', this.updatedAvatar);
             }
 
             axios.post(
