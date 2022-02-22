@@ -10,15 +10,15 @@ namespace App\Personnel\Users;
 class UserEntity
 {
     public ?int $id = null;
-    public string $email = '';
-    public string $name = '';
-    public string $lastName = '';
-    public string $patronymic = '';
-    public string $phone = '';
-    public string $avatar = '';
-    public string $profileUrl = '';
+    public ?string $email = null;
+    public ?string $name = null;
+    public ?string $lastName = null;
+    public ?string $patronymic = null;
+    public ?string $phone = null;
+    public ?string $avatar = null;
+    public ?string $profileUrl = null;
 
-    public string $position = '';
+    public ?string $position = null;
     public ?int $salary = null;
     public bool $salaryCanBeViewed = false;
     public bool $canBeUpdated = false;

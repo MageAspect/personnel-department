@@ -68,6 +68,7 @@ Route::middleware(['auth'])->group(function () {
         '/users/find',
         [UserController::class, 'findUsers']
     )->name('users.find');
+    Route::post('/users/{id}', array(UserController::class, 'update'));
     Route::resource('users', UserController::class);
 });
 

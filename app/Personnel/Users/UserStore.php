@@ -12,6 +12,8 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\UnauthorizedException;
 
 
 class UserStore
@@ -117,18 +119,57 @@ class UserStore
     /**
      * @throws UserNotFoundException
      */
-    public function update(int $id, $fields): void
+    public function update(UserEntity $userToUpdate, ?string $password = null): void
     {
         try {
-            $user = $this->currentUser::query()->findOrFail($id);
+            $modelUser = $this->currentUser::query()->findOrFail($userToUpdate->id);
         } catch (ModelNotFoundException $e) {
-            throw new UserNotFoundException("User with id: $id not found", 0, $e);
+            throw new UserNotFoundException("User with id: $userToUpdate->id not found", 0, $e);
         }
+
+        if (!$this->currentUser->can('update', $modelUser)) {
+            throw new UnauthorizedException();
+        }
+
+        $modelUser->name = $userToUpdate->name;
+        $modelUser->last_name = $userToUpdate->lastName;
+        $modelUser->patronymic = $userToUpdate->patronymic;
+        $modelUser->phone = $userToUpdate->phone;
+        $modelUser->email = $userToUpdate->email;
+        $modelUser->position = $userToUpdate->position;
+        $modelUser->salary = $userToUpdate->salary;
+        $modelUser->avatar = $userToUpdate->avatar;
+
+        if ($password) {
+            $modelUser->password = Hash::make($password);
+        }
+
+        $modelUser->save();
     }
 
-    public function add($fields): void
+    public function store(UserEntity $userToStore, string $password): int
     {
+        if (!$this->currentUser->can('store', User::class)) {
+            throw new UnauthorizedException();
+        }
 
+        $modelUser = new User();
+        $modelUser->name = $userToStore->name;
+        $modelUser->last_name = $userToStore->lastName;
+        $modelUser->patronymic = $userToStore->patronymic;
+        $modelUser->phone = $userToStore->phone;
+        $modelUser->email = $userToStore->email;
+        $modelUser->position = $userToStore->position;
+        $modelUser->salary = $userToStore->salary;
+        $modelUser->avatar = $userToStore->avatar;
+
+        if ($password) {
+            $modelUser->password = Hash::make($password);
+        }
+
+        $modelUser->save();
+
+        return $modelUser->id;
     }
 
     /**

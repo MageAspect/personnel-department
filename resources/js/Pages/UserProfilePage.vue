@@ -17,23 +17,30 @@
     </page-header>
 
     <page-body ref="pageBody" class="vld-parent">
-        <transition name="fade">
-            <loading v-model:active="isUserLoading"
-                     :is-full-page="false"
-                     loader="spinner"
-                     color="#1976d2"
-                     background-color="none"
-                     :width="60"
-                     blur="0"
-            />
-        </transition>
-        <transition name="fade">
-            <user-profile v-show="!isUserLoading"
-                          ref="userDetails"
+        <template v-if="userId > 0">
+            <transition name="fade">
+                <loading v-model:active="isUserLoading"
+                         :is-full-page="false"
+                         loader="spinner"
+                         color="#1976d2"
+                         background-color="none"
+                         :width="60"
+                         blur="0"
+                />
+            </transition>
+            <transition name="fade">
+                <user-profile v-show="!isUserLoading"
+                              ref="userDetails"
+                              :user-id="userId"
+                              :edit-mode="this.editMode"
+                              @profile-load="onUserLoaded"/>
+            </transition>
+        </template>
+        <template v-else>
+            <user-profile ref="userDetails"
                           :user-id="userId"
-                          :edit-mode="this.editMode"
-                          @profile-load="onUserLoaded"/>
-        </transition>
+                          :edit-mode="this.editMode"/>
+        </template>
     </page-body>
 </template>
 

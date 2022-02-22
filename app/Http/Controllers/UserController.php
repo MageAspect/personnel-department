@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequest;
 use App\Personnel\Users\Journal\CareerJournalException;
 use App\Personnel\Users\Journal\CareerJournalStore;
+use App\Personnel\Users\UserEntity;
 use App\Personnel\Users\UserNotFoundException;
 use App\Personnel\Users\UserStore;
 use App\Personnel\Users\UserStoreException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 
 class UserController extends Controller
@@ -34,6 +37,27 @@ class UserController extends Controller
     public function edit(int $id): View
     {
         return view('users.edit', array('userId' => $id));
+    }
+
+    public function store(Request $request, UserStore $userStore): JsonResponse
+    {
+        $u = $this->getFromRequest($request);
+
+        $password = $request->get('newPassword');
+
+        return response()->json(
+            array('id' => $userStore->store($u, $password))
+        );
+    }
+
+    public function update(int $id, Request $request, UserStore $userStore): Response
+    {
+        $u = $this->getFromRequest($request);
+        $u->id = $id;
+
+        $userStore->update($u);
+
+        return response()->noContent();
     }
 
     public function destroy(UserStore $userStore, int $id): JsonResponse
@@ -155,5 +179,19 @@ class UserController extends Controller
         }
 
         return $protectedSort;
+    }
+
+    protected function getFromRequest(Request $request): UserEntity
+    {
+        $u = new UserEntity();
+        $u->name = $request->get('name');
+        $u->lastName = $request->get('lastName');
+        $u->patronymic = $request->get('patronymic');
+        $u->email = $request->get('email');
+        $u->phone = $request->get('phone');
+        $u->position = $request->get('position');
+        $u->salary = $request->get('salary');
+
+        return $u;
     }
 }

@@ -33,7 +33,7 @@
                     />
                 </transition>
             </profile-block>
-            <profile-block title="Состоит в отделах:">
+            <profile-block v-if="userId > 0" title="Состоит в отделах:">
                 <div class="max-h-72 overflow-y-scroll ui-y-scroll">
                     <department-preview v-for="department of userDepartments" :department="department"/>
                 </div>
@@ -88,7 +88,7 @@
                        class="mt-2"
                        message="Должность лишком длинная"/>
 
-                <template v-if="user.salaryCanBeViewed">
+                <template v-if="user.salaryCanBeViewed || !this.userId">
                     <named-field :edit-mode="editMode" class="mt-5" name="Оклад в рублях"
                                  v-model:value="user.salary"/>
                     <error v-if="v$.user.salary.$dirty && v$.user.salary.required.$invalid"
@@ -116,21 +116,23 @@
                        message="Телефон заполнен не полностью"/>
             </profile-block>
 
-            <profile-block v-if="editMode" title="Смена пароля">
-                <named-field :edit-mode="true" class="mt-5" name="Текущий пароль" type="password"
-                             v-model:value="currentPassword"/>
-                <error v-if="v$.currentPassword.$dirty && v$.currentPassword.requiredIf.$invalid"
-                       class="mt-2"
-                       message="Текущий пароль обязателен для заполнения при его смене"/>
-                <error v-if="v$.currentPassword.$dirty && v$.currentPassword.maxLength.$invalid"
-                       class="mt-2"
-                       message="Текущий пароль слишком длинный"/>
+            <profile-block v-if="editMode" :title="userId > 0 ? 'Смена пароля' : 'Пароль'">
+                <template v-if="userId > 0">
+                    <named-field :edit-mode="true" class="mt-5" name="Текущий пароль" type="password"
+                                 v-model:value="currentPassword"/>
+                    <error v-if="v$.currentPassword.$dirty && v$.currentPassword.requiredIf.$invalid"
+                           class="mt-2"
+                           message="Текущий пароль обязателен для заполнения при его смене"/>
+                    <error v-if="v$.currentPassword.$dirty && v$.currentPassword.maxLength.$invalid"
+                           class="mt-2"
+                           message="Текущий пароль слишком длинный"/>
+                </template>
 
                 <named-field :edit-mode="true" class="mt-5" name="Новый пароль" type="password"
                              v-model:value="newPassword"/>
                 <error v-if="v$.newPassword.$dirty && v$.newPassword.requiredIf.$invalid"
                        class="mt-2"
-                       message="Новый пароль обязателен для заполнения при смене пароля"/>
+                       message="Новый пароль обязателен для заполнения"/>
                 <error v-else-if="v$.newPassword.$dirty && v$.newPassword.minLength.$invalid"
                        class="mt-2"
                        message="Новый пароль слишком короткий"/>
@@ -145,8 +147,8 @@
                        message="Пароли не совпадают"/>
             </profile-block>
 
-            <profile-block class="mb-0" title="Журнал продвижения по службе">
-                <journal-grid class="pt-3" :entries="careerJournal" :display-salary="user.salaryCanBeViewed" />
+            <profile-block v-if="userId > 0" class="mb-0" title="Журнал продвижения по службе">
+                <journal-grid class="pt-3" :entries="careerJournal" :display-salary="user.salaryCanBeViewed"/>
             </profile-block>
         </div>
     </div>
@@ -205,7 +207,7 @@ export default {
             isDragAndDropPopupShowed: false,
             isOpenDragAndDropPopupButtonShowed: false,
 
-            userUpdatedAvatar: null,
+            updatedAvatar: null,
             currentPassword: '',
             newPassword: '',
             newPasswordConfirm: ''
@@ -256,12 +258,12 @@ export default {
             },
 
             currentPassword: {
-                requiredIf: requiredIf(this.newPassword || this.newPasswordConfirm),
+                requiredIf: requiredIf(false),
                 maxLength: maxLength(40),
             },
 
             newPassword: {
-                requiredIf: requiredIf(this.currentPassword),
+                requiredIf: requiredIf(this.currentPassword || !this.userId),
                 minLength: minLength(6),
                 maxLength: maxLength(40),
             },
@@ -297,7 +299,7 @@ export default {
          * @param {File} file
          */
         updateAvatar(file) {
-            this.userUpdatedAvatar = file;
+            this.updatedAvatar = file;
 
             const reader = new FileReader();
 
@@ -310,18 +312,48 @@ export default {
             reader.readAsDataURL(file);
         },
 
-        loadUser() {
-        },
-
         save() {
             this.v$.$touch();
             if (this.v$.$error) {
+                alert(this.v$.$message)
                 return;
             }
+
+            let formData = new FormData();
+            formData.append('name', this.user.name);
+            formData.append('lastName', this.user.lastName);
+            formData.append('patronymic', this.user.patronymic);
+            formData.append('salary', this.user.salary);
+            formData.append('position', this.user.position);
+            formData.append('email', this.user.email);
+            formData.append('phone', this.user.phone);
+            if (this.currentPassword) {
+                formData.append('currentPassword', this.currentPassword);
+            }
+            if (this.newPassword) {
+                formData.append('newPassword', this.newPassword);
+            }
+            if (this.updatedAvatar) {
+                formData.append('updatedAvatar', this.updatedAvatar);
+            }
+
+            axios.post(
+                this.userId > 0 ? `/users/${this.userId}` : '/users',
+                formData
+            )
+                .then((response) => {
+                    let id = this.userId ? this.userId: response.data.id;
+                    location.href = `/users/${id}`;
+                })
+                .catch(() => alert('Ошибка сохранения.'));
         }
     },
 
     mounted() {
+        if (!this.userId) {
+            return;
+        }
+
         let pUser = axios.get(`/users/find/${this.userId}`)
             .then((response) => {
                 this.user = User.fromJson(response.data);
