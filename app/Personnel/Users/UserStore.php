@@ -8,6 +8,7 @@ namespace App\Personnel\Users;
 
 
 use App\Models\User;
+use App\Personnel\Users\Journal\CareerJournalStore;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -20,10 +21,12 @@ use Illuminate\Validation\UnauthorizedException;
 class UserStore
 {
     private User $currentUser;
+    private CareerJournalStore $journalStore;
 
-    public function __construct(User $currentUser)
+    public function __construct(User $currentUser, CareerJournalStore $journalStore)
     {
         $this->currentUser = $currentUser;
+        $this->journalStore = $journalStore;
     }
 
     /**
@@ -119,11 +122,14 @@ class UserStore
 
     /**
      * @throws UserNotFoundException
+     * @throws Journal\CareerJournalException
      */
     public function update(UserEntity $userToUpdate, ?string $password = null): void
     {
         try {
-            $modelUser = $this->currentUser::query()->findOrFail($userToUpdate->id);
+            $modelUser = $this->currentUser::query()
+                ->with('departments')
+                ->findOrFail($userToUpdate->id);
         } catch (ModelNotFoundException $e) {
             throw new UserNotFoundException("User with id: $userToUpdate->id not found", 0, $e);
         }
@@ -146,6 +152,33 @@ class UserStore
         }
 
         $modelUser->save();
+
+        $this->journalStore->addRecord(
+            14,
+            123,
+            'asdasd',
+            22
+        );
+    }
+
+    public function isCorrectPassword(int $userId, string $password): bool {
+        $user = $this->currentUser::query()
+            ->where('id', $userId)
+            ->first();
+
+        return Hash::check($password, $user->password);
+    }
+
+    public function isUniqueEmail(string $email, ?int $userId = null): bool {
+
+        $q = $this->currentUser::query()
+            ->select('email')
+            ->where('email', $email);
+        if ($userId > 0) {
+            $q->where('id', '!=', $userId);
+        }
+
+        return !$q->first();
     }
 
     public function store(UserEntity $userToStore, string $password): int

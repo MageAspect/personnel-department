@@ -2,7 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\CareerJournal;
+use App\Models\Department;
 use App\Personnel\Department\DepartmentStore;
+use App\Personnel\Users\Journal\CareerJournalStore;
 use App\Personnel\Users\UserStore;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Request;
@@ -20,10 +23,10 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(UserStore::class, function () {
-            return new UserStore(Request::user());
+            return new UserStore(Request::user(), new CareerJournalStore(new CareerJournal()));
         });
         $this->app->bind(DepartmentStore::class, function () {
-            return new DepartmentStore(Request::user());
+            return new DepartmentStore(Request::user(), $this->app->make(UserStore::class), new Department());
         });
     }
 

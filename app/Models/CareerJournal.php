@@ -16,6 +16,8 @@ class CareerJournal extends Model
         'ended_at',
     ];
 
+    protected $guarded = [];
+
     public $timestamps = false;
 
     public function department()

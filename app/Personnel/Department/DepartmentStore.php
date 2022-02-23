@@ -25,12 +25,11 @@ class DepartmentStore
     private UserStore $userStore;
     private ?Department $department;
 
-    public function __construct(User $currentUser, UserStore $userStore = null, Department $department = null)
+    public function __construct(User $currentUser, UserStore $userStore, Department $department)
     {
         $this->currentUser = $currentUser;
-        $this->userStore = $userStore ?? new UserStore($currentUser);
-
-        $this->department = $department ?? new Department();
+        $this->userStore = $userStore;
+        $this->department = $department;
     }
 
     /**

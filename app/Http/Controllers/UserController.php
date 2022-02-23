@@ -2,19 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserRequest;
 use App\Personnel\Users\Journal\CareerJournalException;
 use App\Personnel\Users\Journal\CareerJournalStore;
 use App\Personnel\Users\UserEntity;
 use App\Personnel\Users\UserNotFoundException;
 use App\Personnel\Users\UserStore;
 use App\Personnel\Users\UserStoreException;
+use Exception;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 
 
 class UserController extends Controller
@@ -45,6 +44,15 @@ class UserController extends Controller
     {
         $u = $this->getFromRequest($request);
 
+        if (!$userStore->isUniqueEmail($request->get('email'))) {
+            return response()->json(
+                array('message' => 'Данный email уже занят'),
+                422,
+                [],
+                JSON_UNESCAPED_UNICODE
+            );
+        }
+
         if ($request->hasFile('avatar')) {
             $u->avatar = $this->uploadAvatar($request->file('avatar'));
         }
@@ -56,16 +64,48 @@ class UserController extends Controller
         );
     }
 
-    public function update(int $id, Request $request, UserStore $userStore): Response
+    public function update(int $id, Request $request, UserStore $userStore): JsonResponse|Response
     {
         $u = $this->getFromRequest($request);
         $u->id = $id;
+
+        $currentPassword = $request->get('currentPassword');
+        if (strlen($currentPassword) > 0 && !$userStore->isCorrectPassword($id, $currentPassword)) {
+            return response()->json(
+                array('message' => 'Неверный текущий пароль'),
+                422,
+                [],
+                JSON_UNESCAPED_UNICODE
+            );
+        }
+
+        if (!$userStore->isUniqueEmail($u->email, $id)) {
+            return response()->json(
+                array('message' => 'Данный email уже занят'),
+                422,
+                [],
+                JSON_UNESCAPED_UNICODE
+            );
+        }
 
         if ($request->hasFile('avatar')) {
             $u->avatar = $this->uploadAvatar($request->file('avatar'));
         }
 
-        $userStore->update($u);
+        try {
+            if ($request->get('newPassword')) {
+                $userStore->update($u, $request->get('newPassword'));
+            } else {
+                $userStore->update($u);
+            }
+        } catch (Exception) {
+            return response()->json(
+                array('message' => 'Ошибка обновления пользователя'),
+                422,
+                [],
+                JSON_UNESCAPED_UNICODE
+            );
+        }
 
         return response()->noContent();
     }
@@ -144,9 +184,10 @@ class UserController extends Controller
         }
     }
 
-    public function findUserCareerJournal(CareerJournalStore $journalStore, int $userId): JsonResponse {
+    public function findUserCareerJournal(CareerJournalStore $journalStore, int $userId, UserStore $userStore): JsonResponse {
         try {
-            $journal = $journalStore->findJournal($userId);
+            $user = $userStore->findById($userId);
+            $journal = $journalStore->findJournal($userId, $user->salaryCanBeViewed);
 
             return response()->json(
                 array_values($journal->all()),
@@ -154,7 +195,7 @@ class UserController extends Controller
                 array(),
                 JSON_UNESCAPED_UNICODE
             );
-        } catch (CareerJournalException) {
+        } catch (CareerJournalException|UserStoreException) {
             return response()->json(
                 array('message' => 'Не удалось получить Журнал пользователя'),
                 500,

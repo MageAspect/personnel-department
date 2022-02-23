@@ -8,11 +8,8 @@ namespace App\Personnel\Users\Journal;
 
 
 use App\Models\CareerJournal;
-use App\Models\Department;
-use App\Personnel\Users\UserStore;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -20,40 +17,32 @@ use Illuminate\Support\Facades\DB;
 class CareerJournalStore
 {
     private CareerJournal $careerJournal;
-    private Department $department;
-    private UserStore $userStore;
 
-    public function __construct(CareerJournal $careerJournal, Department $department, UserStore $userStore)
+    public function __construct(CareerJournal $careerJournal)
     {
         $this->careerJournal = $careerJournal;
-        $this->department = $department;
-        $this->userStore = $userStore;
     }
 
     /**
      * @throws CareerJournalException
      */
-    public function addRecord(int $userId, int $departmentId, int $salary, string $position): void
+    public function addRecord(int $userId, int $salary, string $position,  ?int $departmentId = null): void
     {
         try {
-
             $newRecord = array(
                 'user_id' => $userId,
-                'department_id' => $departmentId,
                 'salary' => $salary,
                 'position' => $position,
             );
+
+            if ($departmentId) {
+                $newRecord['department_id'] = $departmentId;
+            }
 
             DB::beginTransaction();
             $this->markAsEndedActiveRecords($userId);
             $this->careerJournal::create($newRecord);
             DB::commit();
-        } catch (ModelNotFoundException $e) {
-            throw new CareerJournalException(
-                'Не удалось добавить запись в журнал - отдел не существет',
-                0,
-                $e
-            );
         } catch (Exception $e) {
             DB::rollBack();
             throw new CareerJournalException(
@@ -65,11 +54,9 @@ class CareerJournalStore
     /**
      * @throws CareerJournalException
      */
-    public function findJournal(int $userId): Collection
+    public function findJournal(int $userId, bool $salaryCanBeViewed = false): Collection
     {
         try {
-            $user = $this->userStore->findById($userId);
-
             $records = $this->careerJournal::query()
                 ->with('department')
                 ->where('user_id', $userId)
@@ -78,7 +65,7 @@ class CareerJournalStore
             $result = array();
             foreach ($records as $record) {
                 $r = new CareerJournalEntity();
-                if ($user->salaryCanBeViewed) {
+                if ($salaryCanBeViewed) {
                     $r->salary = $record->salary;
                 }
                 $r->departmentName = $record->department->name;

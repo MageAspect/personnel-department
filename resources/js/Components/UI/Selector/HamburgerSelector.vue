@@ -13,7 +13,7 @@
                     </a>
                     <div v-else
                        :class="[...item.classes, 'py-2', 'px-3', 'transition', 'border-b' , 'border-oceanic', 'cursor-pointer']"
-                       @click="item.clickHandler"
+                       @click="[item.clickHandler(), closeItemsList()]"
                     >
                         {{ item.text }}
                     </div>

@@ -315,7 +315,6 @@ export default {
         save() {
             this.v$.$touch();
             if (this.v$.$error) {
-                alert(this.v$.$message)
                 return;
             }
 
@@ -345,7 +344,7 @@ export default {
                     let id = this.userId ? this.userId: response.data.id;
                     location.href = `/users/${id}`;
                 })
-                .catch(() => alert('Ошибка сохранения.'));
+                .catch((axiosError) => alert(axiosError.response.data.message));
         }
     },
 
