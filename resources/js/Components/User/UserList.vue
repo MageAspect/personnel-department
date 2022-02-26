@@ -125,6 +125,8 @@ export default {
             sort: {id: 'desc'},
             users: [],
 
+            findUserCanselToken: null,
+
             pagination: {
                 recordsPerPage: 15,
                 recordsTotalCount: 1,
@@ -136,8 +138,7 @@ export default {
     methods: {
         onSearch(search) {
             this.search = search;
-
-            this.createLoadUsersRequest(500);
+            this.createLoadUsersRequest(600);
         },
 
         onSort(columnName, direction) {
@@ -146,7 +147,7 @@ export default {
             }
             this.sort[columnName] = direction;
 
-            this.createLoadUsersRequest(700)
+            this.createLoadUsersRequest(600)
         },
 
         changePage(pageNumber) {
@@ -182,15 +183,31 @@ export default {
         },
 
         async getUsers(search = '', sort = [], offset = 0, limit = 10) {
-            let response = await axios.post(
-                '/users/find',
-                {
-                    search,
-                    sort,
-                    offset,
-                    limit
+            if (this.findUserCanselToken) {
+                this.findUserCanselToken.cancel('New search users request');
+            }
+            this.findUserCanselToken = axios.CancelToken.source();
+
+            let response;
+            try {
+                response = await axios.post(
+                    '/users/find',
+                    {
+                        search,
+                        sort,
+                        offset,
+                        limit
+                    },
+                    {
+                        cancelToken: this.findUserCanselToken.token,
+                    }
+                );
+            } catch (er) {
+                if (er?.__CANCEL__ === true) {
+                    return;
                 }
-            );
+                throw er;
+            }
 
             let users = [];
 

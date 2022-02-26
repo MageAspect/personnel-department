@@ -7,10 +7,10 @@
             <a href="/users/" class="btn btn-light mr-4">
                 <span>К списку</span>
             </a>
-            <a v-if="isViewMode()" :href="editHref" class="btn btn-primary">
+            <a v-if="isViewMode() && user.canBeUpdated" :href="editHref" class="btn btn-primary">
                 <span>Редактировать</span>
             </a>
-            <button v-else @click="sendSaveEvent()" class="btn btn-success">
+            <button v-if="isEditMode()" @click="sendSaveEvent()" class="btn btn-success">
                 <span>Сохранить</span>
             </button>
         </template>
