@@ -41,6 +41,9 @@ class UserUpdateRequest extends FormRequest
                         $fail('Неверный текущий пароль');
                     }
                 }
+            ),
+            'avatar' => array(
+                'mimes:jpg,png,jpeg'
             )
         );
     }

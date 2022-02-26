@@ -198,7 +198,10 @@ class UserController extends Controller
         $user->position = $request->get('position');
         $user->salary = $request->get('salary');
 
-        if ($request->hasFile('avatar')) {
+        if (
+            $request->hasFile('avatar')
+            && in_array($request->file('avatar')->getMimeType(), array('image/png','image/jpg','image/jpeg'))
+        ) {
             $user->avatar = $this->uploadAvatar($request->file('avatar'));
         }
 

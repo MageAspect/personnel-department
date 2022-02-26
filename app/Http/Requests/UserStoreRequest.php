@@ -28,6 +28,9 @@ class UserStoreRequest extends FormRequest
             'email' => array(
                 'required',
                 'unique:users,email'
+            ),
+            'avatar' => array(
+                'mimes:jpg,png,jpeg'
             )
         );
     }

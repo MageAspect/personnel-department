@@ -12,7 +12,7 @@
             <div class="mb-2">или</div>
             <label class="btn btn-primary text-2xs p-3">
                 Выберите файл
-                <input @input="inputFile" type="file" class="hidden">
+                <input @input="inputFile" type="file" accept="image/jpeg,image/png,image/jpg" class="hidden">
             </label>
         </div>
     </full-screen-popup>
