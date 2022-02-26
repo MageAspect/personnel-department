@@ -2,29 +2,46 @@
 
 namespace App\Http\Requests;
 
+use App\Personnel\Users\UserStore;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\App;
+
 
 class UserUpdateRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    use JsonAnswerOnFail;
+
+    private UserStore $userStore;
+    private int $userId;
+
+    public function authorize(): bool
     {
-        return false;
+        /** @var UserStore $us */
+        $this->userStore = App::make(UserStore::class);
+        $this->userId = $this->route()->parameter('id') ?: 0;
+
+        return $this->userStore->canUpdate($this->userId);
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
+    public function rules(): array
     {
-        return [
-            //
-        ];
+        return array(
+            'email' => array(
+                'required',
+                'email',
+                function ($attribute, $email, $fail) {
+                    if (!$this->userStore->isUniqueEmail($this->userId, $email)) {
+                        $fail('Указанный email уже занят');
+                    }
+                }
+            ),
+            'currentPassword' => array(
+                function ($attribute, $password, $fail) {
+                    if ($password && !$this->userStore->isCorrectPassword($this->userId, $password)) {
+                        $fail('Неверный текущий пароль');
+                    }
+                }
+            )
+        );
     }
 }

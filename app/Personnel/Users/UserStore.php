@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Personnel\Users\Journal\CareerJournalStore;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
@@ -138,18 +139,7 @@ class UserStore
             throw new UnauthorizedException();
         }
 
-        $modelUser->name = $userToUpdate->name;
-        $modelUser->last_name = $userToUpdate->lastName;
-        $modelUser->patronymic = $userToUpdate->patronymic;
-        $modelUser->phone = $userToUpdate->phone;
-        $modelUser->email = $userToUpdate->email;
-        $modelUser->position = $userToUpdate->position;
-        $modelUser->salary = $userToUpdate->salary;
-        $modelUser->avatar = $userToUpdate->avatar;
-
-        if ($password) {
-            $modelUser->password = Hash::make($password);
-        }
+        $this->updateModelFromEntity($modelUser, $userToUpdate, $password);
 
         $modelUser->save();
 
@@ -161,24 +151,15 @@ class UserStore
 //        );
     }
 
-    public function isCorrectPassword(int $userId, string $password): bool {
-        $user = $this->currentUser::query()
-            ->where('id', $userId)
-            ->first();
-
-        return Hash::check($password, $user->password);
-    }
-
-    public function isUniqueEmail(string $email, ?int $userId = null): bool {
-
-        $q = $this->currentUser::query()
-            ->select('email')
-            ->where('email', $email);
-        if ($userId > 0) {
-            $q->where('id', '!=', $userId);
+    public function canUpdate(int $id): bool {
+        try {
+            $userToUpdate = $this->currentUser::query()
+                ->findOrFail($id);
+        } catch (ModelNotFoundException) {
+            return false;
         }
 
-        return !$q->first();
+        return $this->currentUser->can('update', $userToUpdate);
     }
 
     public function store(UserEntity $userToStore, string $password): int
@@ -188,21 +169,9 @@ class UserStore
         }
 
         $modelUser = new User();
-        $modelUser->name = $userToStore->name;
-        $modelUser->last_name = $userToStore->lastName;
-        $modelUser->patronymic = $userToStore->patronymic;
-        $modelUser->phone = $userToStore->phone;
-        $modelUser->email = $userToStore->email;
-        $modelUser->position = $userToStore->position;
-        $modelUser->salary = $userToStore->salary;
-        $modelUser->avatar = $userToStore->avatar;
-
-        if ($password) {
-            $modelUser->password = Hash::make($password);
-        }
+        $this->updateModelFromEntity($modelUser, $userToStore, $password);
 
         $modelUser->save();
-
         return $modelUser->id;
     }
 
@@ -222,6 +191,32 @@ class UserStore
         } catch (Exception $e) {
             throw new UserStoreException("Failed to delete User with id: $id", 0, $e);
         }
+    }
+
+    /**
+     * @throws UserNotFoundException
+     */
+    public function isCorrectPassword(int $userId, string $password): bool {
+        try {
+            $user = $this->currentUser::query()
+                ->findOrFail($userId);
+        } catch (ModelNotFoundException $e) {
+            throw new UserNotFoundException("User with id: $userId not found", 0, $e);
+        }
+
+        return Hash::check($password, $user->password);
+    }
+
+    public function isUniqueEmail(int $userId, string $email): bool {
+
+        $q = $this->currentUser::query()
+            ->select('email')
+            ->where('email', $email);
+        if ($userId > 0) {
+            $q->where('id', '!=', $userId);
+        }
+
+        return !$q->first();
     }
 
     protected function createUserEntity(User $user): UserEntity
@@ -263,6 +258,21 @@ class UserStore
         if (isset($filter['id'])) {
             is_array($filter['id']) ? $query->whereIn('id', $filter['id'])
                 : $query->where('id', $filter['id']);
+        }
+    }
+
+    protected function updateModelFromEntity(Model $model, UserEntity $entity, ?string $password = null): void {
+        $model->name = $entity->name;
+        $model->last_name = $entity->lastName;
+        $model->patronymic = $entity->patronymic;
+        $model->phone = $entity->phone;
+        $model->email = $entity->email;
+        $model->position = $entity->position;
+        $model->salary = $entity->salary;
+        $model->avatar = $entity->avatar;
+
+        if ($password) {
+            $model->password = Hash::make($password);
         }
     }
 }

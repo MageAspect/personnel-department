@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\JsonHttpResponseException;
 use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Personnel\Users\Journal\CareerJournalException;
 use App\Personnel\Users\Journal\CareerJournalStore;
 use App\Personnel\Users\UserEntity;
@@ -55,38 +56,22 @@ class UserController extends Controller
 
     public function store(UserStoreRequest $request): JsonResponse
     {
-        $u = $this->getFromRequest($request);
+        try {
+            $u = $this->getFromRequest($request);
 
-        return $this->jsonResponse(array(
-            'id' => $this->userStore->store($u, $request->get('newPassword'))
-        ));
+            return $this->jsonResponse(array(
+                'id' => $this->userStore->store($u, $request->get('newPassword'))
+            ));
+        } catch (Exception) {
+            throw new JsonHttpResponseException('Ошибка добавления пользователя');
+        }
     }
 
-    public function update(int $id, Request $request): JsonResponse|Response
+    public function update(UserUpdateRequest $request): JsonResponse|Response
     {
-        $u = $this->getFromRequest($request);
-        $u->id = $id;
-
-        $currentPassword = $request->get('currentPassword');
-        if (strlen($currentPassword) > 0 && !$this->userStore->isCorrectPassword($id, $currentPassword)) {
-            return response()->json(
-                array('message' => 'Неверный текущий пароль'),
-                422,
-                [],
-                JSON_UNESCAPED_UNICODE
-            );
-        }
-
-        if (!$this->userStore->isUniqueEmail($u->email, $id)) {
-            return response()->json(
-                array('message' => 'Данный email уже занят'),
-                422,
-                [],
-                JSON_UNESCAPED_UNICODE
-            );
-        }
-
         try {
+            $u = $this->getFromRequest($request);
+
             if ($request->get('newPassword')) {
                 $this->userStore->update($u, $request->get('newPassword'));
             } else {
