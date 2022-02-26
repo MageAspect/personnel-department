@@ -263,8 +263,8 @@ export default {
                     }
                 })
                 .catch((axiosError) => {
-                    if (axiosError.response.data.hasOwnProperty('error')) {
-                        this.saveError = axiosError.response.data.error;
+                    if (axiosError.response.data.hasOwnProperty('errors')) {
+                        this.saveError = axiosError.response.data.errors[0];
                     } else {
                         this.saveError = 'Что-то пошло не так. Повторите позднее';
                     }

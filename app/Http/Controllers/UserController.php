@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\JsonHttpResponseException;
+use App\Http\Requests\UserStoreRequest;
 use App\Personnel\Users\Journal\CareerJournalException;
 use App\Personnel\Users\Journal\CareerJournalStore;
 use App\Personnel\Users\UserEntity;
@@ -14,10 +16,21 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\App;
 
 
 class UserController extends Controller
 {
+    private UserStore $userStore;
+
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            $this->userStore = App::make(UserStore::class);
+
+            return $next($request);
+        });
+    }
 
     public function index(): View
     {
@@ -40,37 +53,22 @@ class UserController extends Controller
         return view('users.edit', array('userId' => $id));
     }
 
-    public function store(Request $request, UserStore $userStore): JsonResponse
+    public function store(UserStoreRequest $request): JsonResponse
     {
         $u = $this->getFromRequest($request);
 
-        if (!$userStore->isUniqueEmail($request->get('email'))) {
-            return response()->json(
-                array('message' => 'Данный email уже занят'),
-                422,
-                [],
-                JSON_UNESCAPED_UNICODE
-            );
-        }
-
-        if ($request->hasFile('avatar')) {
-            $u->avatar = $this->uploadAvatar($request->file('avatar'));
-        }
-
-        $password = $request->get('newPassword');
-
-        return response()->json(
-            array('id' => $userStore->store($u, $password))
-        );
+        return $this->jsonResponse(array(
+            'id' => $this->userStore->store($u, $request->get('newPassword'))
+        ));
     }
 
-    public function update(int $id, Request $request, UserStore $userStore): JsonResponse|Response
+    public function update(int $id, Request $request): JsonResponse|Response
     {
         $u = $this->getFromRequest($request);
         $u->id = $id;
 
         $currentPassword = $request->get('currentPassword');
-        if (strlen($currentPassword) > 0 && !$userStore->isCorrectPassword($id, $currentPassword)) {
+        if (strlen($currentPassword) > 0 && !$this->userStore->isCorrectPassword($id, $currentPassword)) {
             return response()->json(
                 array('message' => 'Неверный текущий пароль'),
                 422,
@@ -79,7 +77,7 @@ class UserController extends Controller
             );
         }
 
-        if (!$userStore->isUniqueEmail($u->email, $id)) {
+        if (!$this->userStore->isUniqueEmail($u->email, $id)) {
             return response()->json(
                 array('message' => 'Данный email уже занят'),
                 422,
@@ -88,45 +86,31 @@ class UserController extends Controller
             );
         }
 
-        if ($request->hasFile('avatar')) {
-            $u->avatar = $this->uploadAvatar($request->file('avatar'));
-        }
-
         try {
             if ($request->get('newPassword')) {
-                $userStore->update($u, $request->get('newPassword'));
+                $this->userStore->update($u, $request->get('newPassword'));
             } else {
-                $userStore->update($u);
+                $this->userStore->update($u);
             }
         } catch (Exception) {
-            return response()->json(
-                array('message' => 'Ошибка обновления пользователя'),
-                422,
-                [],
-                JSON_UNESCAPED_UNICODE
-            );
+            throw new JsonHttpResponseException('Ошибка обновления пользователя' );
         }
 
         return response()->noContent();
     }
 
-    public function destroy(UserStore $userStore, int $id): JsonResponse
+    public function destroy(int $id): JsonResponse|Response
     {
         try {
-            $userStore->delete($id);
-        } catch (UserStoreException $e) {
-            return response()->json(
-                array(
-                    'error' => $e->getMessage()
-                ),
-                500
-            );
+            $this->userStore->delete($id);
+        } catch (UserStoreException) {
+            throw new JsonHttpResponseException('Ошибка удаления пользователя' );
         }
 
-        return response()->json();
+        return response()->noContent();
     }
 
-    public function findUsers(UserStore $userStore, Request $request): JsonResponse
+    public function findUsers(Request $request): JsonResponse
     {
         $filter = [];
         if (!empty($request->get('search'))) {
@@ -141,66 +125,44 @@ class UserController extends Controller
         $limit = $request->get('limit') ?: 20;
 
         try {
-            $users = $userStore->findUsers($filter, $sort, $offset, $limit);
-            $count = $userStore->findUsersCount($filter);
+            $users = $this->userStore->findUsers($filter, $sort, $offset, $limit);
+            $count = $this->userStore->findUsersCount($filter);
 
-            return response()->json(
+            return $this->jsonResponse(
                 array_values($users->all()),
                 200,
                 array('X-Total-Count' => $count),
-                JSON_UNESCAPED_UNICODE
             );
         } catch (UserStoreException) {
-            return response()->json(
-                array('message' => 'Не удалось получить список пользователей'),
-                500,
-                array(),
-                JSON_UNESCAPED_UNICODE);
+            throw new JsonHttpResponseException('Не удалось получить список пользователей');
         }
     }
 
-    public function findById(UserStore $userStore, int $id): JsonResponse {
+    public function findById(int $id): JsonResponse {
         try {
-            $user = $userStore->findById($id);
+            $user = $this->userStore->findById($id);
 
-            return response()->json(
-                $user,
-                200,
-                array(),
-                JSON_UNESCAPED_UNICODE
-            );
+            return $this->jsonResponse($user);
         } catch (UserNotFoundException) {
-            return response()->json(
+            return $this->jsonResponse(
                 array(),
-                204,
-                array(),
-                JSON_UNESCAPED_UNICODE);
+                204
+            );
         } catch (UserStoreException $e) {
-            return response()->json(
-                array('error' => $e->getMessage()),
-                500,
-                array(),
-                JSON_UNESCAPED_UNICODE);
+            throw new JsonHttpResponseException($e->getMessage());
         }
     }
 
-    public function findUserCareerJournal(CareerJournalStore $journalStore, int $userId, UserStore $userStore): JsonResponse {
+    public function findUserCareerJournal(CareerJournalStore $journalStore, int $userId): JsonResponse {
         try {
-            $user = $userStore->findById($userId);
+            $user = $this->userStore->findById($userId);
             $journal = $journalStore->findJournal($userId, $user->salaryCanBeViewed);
 
-            return response()->json(
-                array_values($journal->all()),
-                200,
-                array(),
-                JSON_UNESCAPED_UNICODE
+            return $this->jsonResponse(
+                array_values($journal->all())
             );
         } catch (CareerJournalException|UserStoreException) {
-            return response()->json(
-                array('message' => 'Не удалось получить Журнал пользователя'),
-                500,
-                array(),
-                JSON_UNESCAPED_UNICODE);
+            throw new JsonHttpResponseException('Не удалось получить Журнал пользователя');
         }
     }
 
@@ -242,6 +204,10 @@ class UserController extends Controller
         $u->phone = $request->get('phone');
         $u->position = $request->get('position');
         $u->salary = $request->get('salary');
+
+        if ($request->hasFile('avatar')) {
+            $u->avatar = $this->uploadAvatar($request->file('avatar'));
+        }
 
         return $u;
     }

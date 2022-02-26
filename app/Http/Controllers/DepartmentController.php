@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\JsonHttpResponseException;
 use App\Http\Requests\DepartmentEditRequest;
 use App\Personnel\Department\DepartmentEntity;
 use App\Personnel\Department\DepartmentStore;
@@ -13,6 +14,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 
 class DepartmentController extends Controller
@@ -60,23 +62,20 @@ class DepartmentController extends Controller
 
 
     public function update(
+        int $id,
         DepartmentEditRequest $request,
-        DepartmentStore $departmentsStore,
-        int $id
-    ): JsonResponse {
+        DepartmentStore $departmentsStore
+    ): JsonResponse|Response {
         $department = $this->createFromRequest($request);
         $department->id = $id;
 
         try {
             $departmentsStore->update($department);
         } catch (DepartmentStoreException $e) {
-            return response()->json(
-                array('error' => $e->getMessage()),
-                 500
-            );
+            throw new JsonHttpResponseException($e->getMessage());
         }
 
-        return response()->json();
+        return response()->noContent();
     }
 
     public function create(UserStore $userStore, DepartmentStore $departmentsStore, Request $request): View
@@ -101,15 +100,12 @@ class DepartmentController extends Controller
         $department = $this->createFromRequest($request);
 
         try {
-            return response()->json(array(
+            return $this->jsonResponse(array(
                 'id' => $departmentsStore->store($department)
             ));
 
         } catch (DepartmentStoreException $e) {
-            return response()->json(
-                array('error' => $e->getMessage()),
-                500
-            );
+            throw new JsonHttpResponseException($e->getMessage());
         }
     }
 
@@ -129,19 +125,11 @@ class DepartmentController extends Controller
         try {
             $departments = $departmentStore->findUserDepartments($userId);
 
-            return response()->json(
-                array_values($departments->toArray()),
-                200,
-                array(),
-                JSON_UNESCAPED_UNICODE
+            return $this->jsonResponse(
+                array_values($departments->toArray())
             );
         } catch (DepartmentStoreException $e) {
-            return response()->json(
-                array('error' => $e->getMessage()),
-                500,
-                array(),
-                JSON_UNESCAPED_UNICODE 
-            );
+            throw new JsonHttpResponseException($e->getMessage());
         }
     }
 

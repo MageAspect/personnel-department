@@ -153,12 +153,12 @@ class UserStore
 
         $modelUser->save();
 
-        $this->journalStore->addRecord(
-            14,
-            123,
-            'asdasd',
-            22
-        );
+//        $this->journalStore->addRecord(
+//            14,
+//            123,
+//            'asdasd',
+//            22
+//        );
     }
 
     public function isCorrectPassword(int $userId, string $password): bool {
