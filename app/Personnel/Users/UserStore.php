@@ -234,7 +234,8 @@ class UserStore
         $userEntity->email = (string) $user->email;
         $userEntity->position = (string) $user->position;
         $userEntity->phone = (string) $user->phone;
-        $userEntity->avatar = $user->avatar ? Storage::disk('public')->url($user->avatar) : null;
+        $userEntity->avatar = $user->avatar ?: null;
+        $userEntity->avatarPublicPath = $user->avatar ? Storage::disk('public')->url($user->avatar) : null;
         $userEntity->profileUrl = route('users.show', array('user' => $user->id));
 
         if ($this->currentUser->isAdministrator() || $user->can_current_user_view_work_fields) {

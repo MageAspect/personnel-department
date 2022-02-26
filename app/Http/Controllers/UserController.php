@@ -194,22 +194,32 @@ class UserController extends Controller
         return $protectedSort;
     }
 
+    /**
+     * @throws UserStoreException
+     * @throws UserNotFoundException
+     */
     protected function getFromRequest(Request $request): UserEntity
     {
-        $u = new UserEntity();
-        $u->name = $request->get('name');
-        $u->lastName = $request->get('lastName');
-        $u->patronymic = $request->get('patronymic');
-        $u->email = $request->get('email');
-        $u->phone = $request->get('phone');
-        $u->position = $request->get('position');
-        $u->salary = $request->get('salary');
+        $user = new UserEntity();
 
-        if ($request->hasFile('avatar')) {
-            $u->avatar = $this->uploadAvatar($request->file('avatar'));
+        $userId = $request->route()->parameter('id');
+        if ($userId > 0) {
+            $user = $this->userStore->findById($userId);
         }
 
-        return $u;
+        $user->name = $request->get('name');
+        $user->lastName = $request->get('lastName');
+        $user->patronymic = $request->get('patronymic');
+        $user->email = $request->get('email');
+        $user->phone = $request->get('phone');
+        $user->position = $request->get('position');
+        $user->salary = $request->get('salary');
+
+        if ($request->hasFile('avatar')) {
+            $user->avatar = $this->uploadAvatar($request->file('avatar'));
+        }
+
+        return $user;
     }
 
     protected function uploadAvatar(UploadedFile $avatar): string {

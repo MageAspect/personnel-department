@@ -16,6 +16,7 @@ class UserEntity
     public ?string $patronymic = null;
     public ?string $phone = null;
     public ?string $avatar = null;
+    public ?string $avatarPublicPath = null;
     public ?string $profileUrl = null;
 
     public ?string $position = null;

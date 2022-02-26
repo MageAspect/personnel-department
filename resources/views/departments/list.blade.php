@@ -53,7 +53,7 @@
                         <div class="flex">
                             <div class="w-13 h-13 shrink-0 rounded-50% overflow-hidden">
                                 <div class="w-inherit h-inherit bg-no-repeat bg-center bg-cover"
-                                     style="@avatar($department->head->avatar)"></div>
+                                     style="@avatar($department->head->avatarPublicPath)"></div>
                             </div>
                             <div class="ml-4 font-medium">
                                 <a href="{{ $department->head->profileUrl }}" class="mb-1 link-gray-light text-base">
