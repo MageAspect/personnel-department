@@ -22,7 +22,7 @@
 import FullScreenPopup from "./FullScreenPopup.vue";
 
 export default {
-    name: "DragAndDropFilePopup",
+    name: "DropZonePopup",
     components: {FullScreenPopup},
     emits: ['selectFile'],
 

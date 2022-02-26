@@ -27,7 +27,7 @@
                     </transition>
                 </div>
                 <transition name="fade">
-                    <drag-and-drop-file-popup v-if="isDragAndDropPopupShowed"
+                    <drop-zone-popup v-if="isDragAndDropPopupShowed"
                                               :close-popup-trigger="closeDragAndDropPopup"
                                               @selectFile="updateAvatar"
                     />
@@ -171,7 +171,7 @@
 <script>
 import {User} from "./User.js";
 import ProfileBlock from "./Parts/ProfileBlock.vue";
-import DragAndDropFilePopup from "../UI/Popup/DragAndDropFilePopup.vue";
+import DropZonePopup from "../UI/Popup/DropZonePopup.vue";
 import NamedField from "../UI/Field/NamedField.vue";
 import DepartmentPreview from "./Parts/DepartmentPreview.vue";
 import useVuelidate from "@vuelidate/core";
@@ -183,7 +183,7 @@ import JournalGrid from "./Parts/JournalGrid.vue";
 
 export default {
     name: "UserProfile",
-    components: {JournalGrid, Error, DepartmentPreview, NamedField, DragAndDropFilePopup, ProfileBlock},
+    components: {JournalGrid, Error, DepartmentPreview, NamedField, DropZonePopup, ProfileBlock},
     props: {
         editMode: {
             type: Boolean,
@@ -334,6 +334,10 @@ export default {
             }
             if (this.updatedAvatar) {
                 formData.append('avatar', this.updatedAvatar);
+            }
+
+            if (!this.user.avatarPath) {
+                formData.append('clearAvatar', true);
             }
 
             axios.post(

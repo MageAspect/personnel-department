@@ -125,9 +125,7 @@ class UserController extends Controller
 
     public function findById(int $id): JsonResponse {
         try {
-            $user = $this->userStore->findById($id);
-
-            return $this->jsonResponse($user);
+            return $this->jsonResponse($this->userStore->findById($id));
         } catch (UserNotFoundException) {
             return $this->jsonResponse(
                 array(),
@@ -202,6 +200,10 @@ class UserController extends Controller
 
         if ($request->hasFile('avatar')) {
             $user->avatar = $this->uploadAvatar($request->file('avatar'));
+        }
+
+        if ($request->has('clearAvatar')) {
+            $user->avatar = null;
         }
 
         return $user;
