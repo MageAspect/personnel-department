@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
+use Illuminate\Contracts\View\View;
 
 
 class AuthMenu extends Component
@@ -17,16 +18,11 @@ class AuthMenu extends Component
         //
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\Contracts\View\View|\Closure|string
-     */
-    public function render()
+    public function render(): View
     {
         return view(
             'components.auth-menu',
-            ['currentRouteIsLogin' => request()->routeIs('auth.login')]
+            array('currentRouteIsLogin' => request()->routeIs('auth.login'))
         );
     }
 }

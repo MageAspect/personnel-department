@@ -20,7 +20,7 @@
 <body class="font-sans h-full">
 <div  class="h-full">
     <div class="flex  h-full bg-oceanic-light">
-        @include('sidebar')
+        <x-app-sidebar></x-app-sidebar>
         <div id="app" class=" ml-7 h-full bg-oceanic grow py-5 ui-y-scroll">
             @yield('content')
         </div>
