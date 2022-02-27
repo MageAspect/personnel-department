@@ -50,6 +50,11 @@ class User extends Authenticatable
             ->withPivot($this->getCreatedAtColumn());
     }
 
+    public function headOf()
+    {
+        return$this->hasOne(Department::class, 'head_id');
+    }
+
     public function isAdministrator(): bool
     {
         return (bool) $this->is_admin;

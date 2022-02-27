@@ -77,8 +77,8 @@ class UserController extends Controller
             } else {
                 $this->userStore->update($u);
             }
-        } catch (Exception) {
-            throw new JsonHttpResponseException('Ошибка обновления пользователя' );
+        } catch (Exception $e) {
+            throw new JsonHttpResponseException('Ошибка обновления пользователя');
         }
 
         return response()->noContent();
@@ -123,14 +123,11 @@ class UserController extends Controller
         }
     }
 
-    public function findById(int $id): JsonResponse {
+    public function findById(int $id): Response|JsonResponse {
         try {
             return $this->jsonResponse($this->userStore->findById($id));
         } catch (UserNotFoundException) {
-            return $this->jsonResponse(
-                array(),
-                204
-            );
+            return response()->noContent();
         } catch (UserStoreException $e) {
             throw new JsonHttpResponseException($e->getMessage());
         }

@@ -10,7 +10,7 @@
             <a v-if="isViewMode() && user.canBeUpdated" :href="editHref" class="btn btn-primary">
                 <span>Редактировать</span>
             </a>
-            <button v-if="isEditMode()" @click="sendSaveEvent()" class="btn btn-success">
+            <button v-if="isEditMode() || isCreateMode()" @click="sendSaveEvent()" class="btn btn-success">
                 <span>Сохранить</span>
             </button>
         </template>
@@ -105,7 +105,7 @@ export default {
         },
 
         isCreateMode() {
-            return this.editMode && this.userId <= 0;
+            return this.editMode && !this.userId;
         },
 
         isViewMode() {

@@ -38,7 +38,8 @@ class UserStoreRequest extends FormRequest
     public function messages(): array
     {
         return array(
-            'avatar.mimes' => 'В качестве аватара можно загрузить только изображение (jpg, png, jpeg)'
+            'avatar.mimes' => 'В качестве аватара можно загрузить только изображение (jpg, png, jpeg)',
+            'email.unique' => 'Указанный email уже занят',
         );
     }
 }

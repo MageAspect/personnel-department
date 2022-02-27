@@ -8,6 +8,7 @@ namespace App\Personnel\Users;
 
 
 use App\Models\User;
+use App\Personnel\Users\Journal\CareerJournalException;
 use App\Personnel\Users\Journal\CareerJournalStore;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -123,32 +124,35 @@ class UserStore
 
     /**
      * @throws UserNotFoundException
-     * @throws Journal\CareerJournalException
+     * @throws CareerJournalException
      */
-    public function update(UserEntity $userToUpdate, ?string $password = null): void
+    public function update(UserEntity $userEntity, ?string $password = null): void
     {
         try {
-            $modelUser = $this->currentUser::query()
-                ->with('departments')
-                ->findOrFail($userToUpdate->id);
+            $userToUpdate = $this->currentUser::query()
+                ->with(array('departments', 'headOf'))
+                ->findOrFail($userEntity->id);
         } catch (ModelNotFoundException $e) {
-            throw new UserNotFoundException("User with id: $userToUpdate->id not found", 0, $e);
+            throw new UserNotFoundException("User with id: $userEntity->id not found", 0, $e);
         }
 
-        if (!$this->currentUser->can('update', $modelUser)) {
+        if (!$this->currentUser->can('update', $userToUpdate)) {
             throw new UnauthorizedException();
         }
 
-        $this->updateModelFromEntity($modelUser, $userToUpdate, $password);
+        $this->updateModelFromEntity($userToUpdate, $userEntity, $password);
 
-        $modelUser->save();
+        if ($userToUpdate->isDirty('salary') || $userToUpdate->isDirty('position')) {
+            $department = $userToUpdate->headOf ?: $userToUpdate->departments->first();
+            $this->journalStore->addRecord(
+                $userToUpdate->id,
+                $userToUpdate->salary,
+                $userToUpdate->position,
+                $department?->id
+            );
+        }
 
-//        $this->journalStore->addRecord(
-//            14,
-//            123,
-//            'asdasd',
-//            22
-//        );
+        $userToUpdate->save();
     }
 
     public function canUpdate(int $id): bool {
@@ -162,6 +166,9 @@ class UserStore
         return $this->currentUser->can('update', $userToUpdate);
     }
 
+    /**
+     * @throws CareerJournalException
+     */
     public function store(UserEntity $userToStore, string $password): int
     {
         if (!$this->currentUser->can('store', User::class)) {
@@ -170,8 +177,14 @@ class UserStore
 
         $modelUser = new User();
         $this->updateModelFromEntity($modelUser, $userToStore, $password);
-
         $modelUser->save();
+
+        $this->journalStore->addRecord(
+            $modelUser->id,
+            $modelUser->salary,
+            $modelUser->position
+        );
+
         return $modelUser->id;
     }
 

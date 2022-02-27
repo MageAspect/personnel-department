@@ -68,7 +68,9 @@ class CareerJournalStore
                 if ($salaryCanBeViewed) {
                     $r->salary = $record->salary;
                 }
-                $r->departmentName = $record->department->name;
+                if ($record->department) {
+                    $r->departmentName = $record->department->name;
+                }
                 $r->position = $record->position;
                 $r->startedAt = $record->started_at;
                 $r->endedAt = $record->ended_at;
