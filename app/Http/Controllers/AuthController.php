@@ -11,6 +11,7 @@ use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
@@ -104,6 +105,12 @@ class AuthController extends Controller
         }
 
         return back()->withErrors(['reset' => 'Не удалось изменить пароль']);
+    }
+
+    public function logout(): RedirectResponse {
+        Auth::logout();
+
+        return redirect()->route('auth.login');
     }
 
     public function isValidReset(string $email, string $token): bool

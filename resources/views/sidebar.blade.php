@@ -4,6 +4,7 @@
  * @author mosowell https://github.com/mosowell
  */
 ?>
+
 <div class="bg-oceanic basis-68 shrink-0">
     <div class="pt-8 px-5 pb-5 border-b border-oceanic-light">
         <div class="w-12 h-12 rounded-50% overflow-hidden">
@@ -35,14 +36,6 @@
                 </div>
                 <div class="">Сотрудники</div>
             </a>
-            <a href="/departments/" class="p-2 mt-3 flex items-center rounded
-                                        text-gray-dark text-sm font-medium transition
-                                        hover:bg-oceanic-light hover:text-blue">
-                <div class="shrink-0 mr-5">
-                    <i class="fa-solid fa-database"></i>
-                </div>
-                <div class="">SQL запрос</div>
-            </a>
         </div>
         <div class="py-3">
             <div class="text-gray-light text-gray-dark opacity-50 text-3.5">Управление аккаунтом</div>
@@ -54,7 +47,7 @@
                 </div>
                 <div class="">Настройки</div>
             </a>
-            <a href="/departments/" class="p-2 mt-3 flex items-center rounded
+            <a href="{{ route('auth.logout') }}" class="p-2 mt-3 flex items-center rounded
                                         text-gray-dark text-sm font-medium transition
                                         hover:bg-oceanic-light hover:text-blue">
                 <div class="shrink-0 mr-5">
