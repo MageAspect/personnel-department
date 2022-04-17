@@ -1,14 +1,14 @@
 <?php
 
 /**
- * @author mosowell https://github.com/mosowell
+ * @author MageAspect https://github.com/mageaspect
  */
 
 /**
  * @var UserEntity $user
  */
 
-use App\Personnel\Users\UserEntity;
+use App\Personnel\User\UserEntity;
 
 
 ?>

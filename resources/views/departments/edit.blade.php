@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author mosowell https://github.com/mosowell
+ * @author MageAspect https://github.com/mageaspect
  */
 
 use App\Personnel\Department\DepartmentEntity;

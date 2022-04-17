@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @author Mark Prohorov <mark@intervolga.ru>
+ * @author MageAspect https://github.com/mageaspect
  */
 
-namespace App\Personnel\Users\Journal;
+namespace App\Personnel\User\Journal;
 
 
 use App\Models\CareerJournal;

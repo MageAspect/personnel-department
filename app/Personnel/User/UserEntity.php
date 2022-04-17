@@ -1,10 +1,10 @@
 <?php
 
 /**
- * @author mosowell https://github.com/mosowell
+ * @author MageAspect https://github.com/mageaspect
  */
 
-namespace App\Personnel\Users;
+namespace App\Personnel\User;
 
 
 class UserEntity

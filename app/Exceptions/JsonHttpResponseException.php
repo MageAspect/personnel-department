@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author Mark Prohorov <mark@intervolga.ru>
+ * @author MageAspect https://github.com/mageaspect
  */
 
 namespace App\Exceptions;

@@ -1,15 +1,15 @@
 <?php
 
 /**
- * @author mosowell https://github.com/mosowell
+ * @author MageAspect https://github.com/mageaspect
  */
 
-namespace App\Personnel\Users;
+namespace App\Personnel\User;
 
 
 use App\Models\User;
-use App\Personnel\Users\Journal\CareerJournalException;
-use App\Personnel\Users\Journal\CareerJournalStore;
+use App\Personnel\User\Journal\CareerJournalException;
+use App\Personnel\User\Journal\CareerJournalStore;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

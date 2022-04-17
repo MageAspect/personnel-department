@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @author mosowell https://github.com/mosowell
+ * @author MageAspect https://github.com/mageaspect
  */
 
 namespace App\Personnel\Department;
@@ -9,9 +9,9 @@ namespace App\Personnel\Department;
 
 use App\Models\Department;
 use App\Models\User;
-use App\Personnel\Users\UserEntity;
-use App\Personnel\Users\UserStore;
-use App\Personnel\Users\UserStoreException;
+use App\Personnel\User\UserEntity;
+use App\Personnel\User\UserStore;
+use App\Personnel\User\UserStoreException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -59,7 +59,7 @@ class DepartmentStore
             $departments->setCollection($this->collectDepartmentsEntities($departments->items()));
             return $departments;
         } catch (Exception $e) {
-            throw new DepartmentStoreException('Не удалость найти отделы', 0, $e);
+            throw new DepartmentStoreException('Не удалось найти отделы', 0, $e);
         }
     }
 
@@ -113,7 +113,7 @@ class DepartmentStore
 
             return $d;
         } catch (Exception $e) {
-            throw new DepartmentStoreException('Не удалость найти отдел', 0, $e);
+            throw new DepartmentStoreException('Не удалось найти отдел', 0, $e);
         }
     }
 
@@ -126,7 +126,7 @@ class DepartmentStore
             $d = $this->department::query()->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             throw new DepartmentStoreException(
-                'Не удалость проверить права на редактирование отдела - отдел не найден',
+                'Не удалось проверить права на редактирование отдела - отдел не найден',
                 0,
                 $e
             );
@@ -144,7 +144,7 @@ class DepartmentStore
             $d = $this->department::query()->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             throw new DepartmentStoreException(
-                'Не удалость проверить права на удаления отдела - отдел не найден',
+                'Не удалось проверить права на удаления отдела - отдел не найден',
                 0,
                 $e
             );
@@ -171,7 +171,7 @@ class DepartmentStore
         try {
             $department = $this->department::query()->findOrFail($departmentEntity->id);
         } catch (ModelNotFoundException $e) {
-            throw new DepartmentStoreException('Не удалость обновил отдел - отдел не найден', 0, $e);
+            throw new DepartmentStoreException('Не удалось обновил отдел - отдел не найден', 0, $e);
         }
 
         try {
@@ -189,7 +189,7 @@ class DepartmentStore
             $department->save();
         } catch (Exception $e) {
             throw new DepartmentStoreException(
-                'Не удалость обновил отдел',
+                'Не удалось обновить отдел',
                 0,
                 $e
             );
@@ -209,7 +209,7 @@ class DepartmentStore
         try {
             $department = $this->department::query()->findOrFail($id);
         } catch (Exception $e) {
-            throw new DepartmentStoreException('Не удалость удалить отдел - отдел не найден', 0, $e);
+            throw new DepartmentStoreException('Не удалось удалить отдел - отдел не найден', 0, $e);
         }
 
         try {
@@ -240,7 +240,7 @@ class DepartmentStore
 
             $department->members()->sync($membersIds);
         } catch (Exception $e) {
-            throw new DepartmentStoreException('Не удалость добавить отдел', 0, $e);
+            throw new DepartmentStoreException('Не удалось добавить отдел', 0, $e);
         }
 
         return $department->id;

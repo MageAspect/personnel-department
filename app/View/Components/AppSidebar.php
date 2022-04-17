@@ -2,7 +2,7 @@
 
 namespace App\View\Components;
 
-use App\Personnel\Users\UserStore;
+use App\Personnel\User\UserStore;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\Component;
 use Illuminate\Contracts\View\View;

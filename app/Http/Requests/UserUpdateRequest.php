@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Personnel\Users\UserStore;
+use App\Personnel\User\UserStore;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\App;
 

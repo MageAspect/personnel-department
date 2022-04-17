@@ -7,9 +7,9 @@ use App\Http\Requests\DepartmentEditRequest;
 use App\Personnel\Department\DepartmentEntity;
 use App\Personnel\Department\DepartmentStore;
 use App\Personnel\Department\DepartmentStoreException;
-use App\Personnel\Users\UserEntity;
-use App\Personnel\Users\UserStore;
-use App\Personnel\Users\UserStoreException;
+use App\Personnel\User\UserEntity;
+use App\Personnel\User\UserStore;
+use App\Personnel\User\UserStoreException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +19,7 @@ use Illuminate\Http\Response;
 
 class DepartmentController extends Controller
 {
-    public function index(Request $request, DepartmentStore $departmentsStore): View
+    public function index(Request $request, DepartmentStore $departmentStore): View
     {
         $filter = array();
         if ($request->get('find')) {
@@ -27,7 +27,7 @@ class DepartmentController extends Controller
         }
 
         try {
-            $departments = $departmentsStore->paginateDepartments($filter, array(), 8);
+            $departments = $departmentStore->paginateDepartments($filter, array(), 8);
         } catch (DepartmentStoreException $e) {
             return view('departments.list', array('error' => $e->getMessage()));
         }
@@ -36,15 +36,15 @@ class DepartmentController extends Controller
             'departments.list',
             array(
                 'departments' => $departments,
-                'canStore' => $departmentsStore->canStore()
+                'canStore' => $departmentStore->canStore()
             )
         );
     }
 
-    public function show(int $id, DepartmentStore $departmentsStore): View
+    public function show(int $id, DepartmentStore $departmentStore): View
     {
         try {
-            $d = $departmentsStore->findById($id);
+            $d = $departmentStore->findById($id);
         } catch (DepartmentStoreException $e) {
             return view('departments.show', array('error' => $e->getMessage()));
         }
@@ -52,14 +52,14 @@ class DepartmentController extends Controller
         return view('departments.show', array('department' => $d));
     }
 
-    public function edit(int $id, DepartmentStore $departmentsStore): View
+    public function edit(int $id, DepartmentStore $departmentStore): View
     {
         try {
-            if (!$departmentsStore->canUpdate($id)) {
+            if (!$departmentStore->canUpdate($id)) {
                 throw new UnauthorizedActionException('Недостаточно прав для редактирования отдела');
             }
 
-            return view('departments.edit', array('department' => $departmentsStore->findById($id)));
+            return view('departments.edit', array('department' => $departmentStore->findById($id)));
 
         } catch (DepartmentStoreException|UnauthorizedActionException $e) {
             return view('departments.edit', array('error' => $e->getMessage()));
@@ -70,13 +70,13 @@ class DepartmentController extends Controller
     public function update(
         int $id,
         DepartmentEditRequest $request,
-        DepartmentStore $departmentsStore
+        DepartmentStore $departmentStore
     ): JsonResponse|Response {
         $department = $this->createFromRequest($request);
         $department->id = $id;
 
         try {
-            $departmentsStore->update($department);
+            $departmentStore->update($department);
         } catch (DepartmentStoreException $e) {
             throw new JsonHttpResponseException($e->getMessage());
         }
@@ -84,10 +84,10 @@ class DepartmentController extends Controller
         return response()->noContent();
     }
 
-    public function create(UserStore $userStore, DepartmentStore $departmentsStore, Request $request): View
+    public function create(UserStore $userStore, DepartmentStore $departmentStore, Request $request): View
     {
         try {
-            if (!$departmentsStore->canStore()) {
+            if (!$departmentStore->canStore()) {
                 throw new UnauthorizedActionException('Недостаточно прав для создания отдела');
             }
 
@@ -101,13 +101,13 @@ class DepartmentController extends Controller
         }
     }
 
-    public function store(Request $request, DepartmentStore $departmentsStore): JsonResponse
+    public function store(Request $request, DepartmentStore $departmentStore): JsonResponse
     {
         $department = $this->createFromRequest($request);
 
         try {
             return $this->jsonResponse(array(
-                'id' => $departmentsStore->store($department)
+                'id' => $departmentStore->store($department)
             ));
 
         } catch (DepartmentStoreException $e) {
@@ -115,10 +115,10 @@ class DepartmentController extends Controller
         }
     }
 
-    public function destroy(int $id, DepartmentStore $departmentsStore): RedirectResponse
+    public function destroy(int $id, DepartmentStore $departmentStore): RedirectResponse
     {
         try {
-            $departmentsStore->delete($id);
+            $departmentStore->delete($id);
         } catch (DepartmentStoreException $e) {
             return back()->withErrors(array('deleteError' => $e->getMessage()));
         }
