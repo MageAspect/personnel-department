@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 
 class CreateUsersCareerJournalTable extends Migration
@@ -17,22 +18,22 @@ class CreateUsersCareerJournalTable extends Migration
             $table->id();
 
             $table->bigInteger('user_id');
-            $table->foreign('user_id')
+            $table->foreign('user_id', 'user_id')
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();
 
-            $table->bigInteger('department_id');
-            $table->foreign('department_id')
+            $table->bigInteger('department_id')->nullable();
+            $table->foreign('department_id', 'department_id')
                 ->references('id')
                 ->on('departments')
                 ->cascadeOnDelete();
 
             $table->integer('salary');
-            $table->integer('position');
+            $table->string('position');
 
-            $table->date('start_date');
-            $table->date('end_date')->nullable();
+            $table->date('started_at')->default(Carbon::now());
+            $table->date('ended_at')->nullable();
         });
     }
 

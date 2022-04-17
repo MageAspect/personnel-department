@@ -22,7 +22,7 @@ class CreateDepartmentsTable extends Migration
             $table->string('description');
 
             $table->bigInteger('head_id');
-            $table->foreign('head_id')
+            $table->foreign('head_id', 'head_id')
                 ->references('id')
                 ->on('users')
                 ->nullOnDelete();

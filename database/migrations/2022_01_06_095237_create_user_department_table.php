@@ -18,13 +18,13 @@ class CreateUserDepartmentTable extends Migration
             $table->timestamp('created_at');
 
             $table->bigInteger('user_id');
-            $table->foreign('user_id')
+            $table->foreign('user_id', 'user_id')
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete();
 
             $table->bigInteger('department_id');
-            $table->foreign('department_id')
+            $table->foreign('department_id', 'department_id')
                 ->references('id')
                 ->on('departments')
                 ->cascadeOnDelete();
