@@ -32,7 +32,13 @@ class DepartmentController extends Controller
             return view('departments.list', array('error' => $e->getMessage()));
         }
 
-        return view('departments.list', ['departments' => $departments]);
+        return view(
+            'departments.list',
+            array(
+                'departments' => $departments,
+                'canStore' => $departmentsStore->canStore()
+            )
+        );
     }
 
     public function show(int $id, DepartmentStore $departmentsStore): View

@@ -11,7 +11,7 @@
                 </button>
                 <button v-else
                         :disabled="isPageChangeDisabled"
-                        class="text-gray cursor-default font-light text-sm px-2 py-1 bg-blue text-white"
+                        class="cursor-default font-light text-sm px-2 py-1 bg-blue text-white"
                 >
                     {{ pageNumber }}
                 </button>

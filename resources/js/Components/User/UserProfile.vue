@@ -227,56 +227,61 @@ export default {
     },
 
     validations() {
-        return {
-            user: {
-                name: {
-                    required,
-                    minLength: minLength(3),
-                    maxLength: maxLength(100)
-                },
-                lastName: {
-                    required,
-                    minLength: minLength(3),
-                    maxLength: maxLength(100)
-                },
-                patronymic: {
-                    maxLength: maxLength(100)
-                },
-                email: {
-                    required,
-                    email
-                },
-                phone: {
-                    required,
-                    minLength: minLength(17),
-                    maxLength: maxLength(17)
-                },
-                position: {
-                    required,
-                    minLength: minLength(3),
-                    maxLength: maxLength(100)
-                },
-                salary: {
-                    required,
-                    minValue: minValue(1),
-                    maxValue: maxValue(100000000),
-                }
-            },
+         let rules = {
+             user: {
+                 name: {
+                     required,
+                     minLength: minLength(3),
+                     maxLength: maxLength(100)
+                 },
+                 lastName: {
+                     required,
+                     minLength: minLength(3),
+                     maxLength: maxLength(100)
+                 },
+                 patronymic: {
+                     maxLength: maxLength(100)
+                 },
+                 email: {
+                     required,
+                     email
+                 },
+                 phone: {
+                     required,
+                     minLength: minLength(17),
+                     maxLength: maxLength(17)
+                 },
+                 position: {
+                     required,
+                     minLength: minLength(3),
+                     maxLength: maxLength(100)
+                 },
+             },
 
-            currentPassword: {
-                requiredIf: requiredIf(false),
-                maxLength: maxLength(40),
-            },
+             currentPassword: {
+                 requiredIf: requiredIf(false),
+                 maxLength: maxLength(40),
+             },
 
-            newPassword: {
-                requiredIf: requiredIf(this.currentPassword || !this.userId),
-                minLength: minLength(6),
-                maxLength: maxLength(40),
-            },
-            newPasswordConfirm: {
-                sameAs: sameAs(this.newPassword)
-            }
-        };
+             newPassword: {
+                 requiredIf: requiredIf(this.currentPassword || !this.userId),
+                 minLength: minLength(6),
+                 maxLength: maxLength(40),
+             },
+             newPasswordConfirm: {
+                 sameAs: sameAs(this.newPassword)
+             }
+         };
+
+         if (this.user.salaryCanBeViewed || this.user.id <= 0) {
+             rules.user.salary = {
+                 required,
+                 minValue: minValue(1),
+                 maxValue: maxValue(100000000),
+             };
+         }
+
+        return rules;
     },
 
     methods: {

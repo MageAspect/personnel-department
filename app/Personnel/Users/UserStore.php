@@ -155,7 +155,13 @@ class UserStore
         $userToUpdate->save();
     }
 
-    public function canUpdate(int $id): bool {
+    public function canStore(): bool
+    {
+        return $this->currentUser->can('store', User::class);
+    }
+
+    public function canUpdate(int $id): bool
+    {
         try {
             $userToUpdate = $this->currentUser::query()
                 ->findOrFail($id);
@@ -243,7 +249,9 @@ class UserStore
         $userEntity->position = (string) $user->position;
         $userEntity->phone = (string) $user->phone;
         $userEntity->avatar = $user->avatar ?: null;
-        $userEntity->avatarPublicPath = $user->avatar ? Storage::disk('public')->url($user->avatar) : null;
+        $userEntity->avatarPublicPath = $user->avatar ?
+            Storage::disk('public')->url('avatars/' . $user->avatar)
+            : null;
         $userEntity->profileUrl = route('users.show', array('user' => $user->id));
 
         if ($this->currentUser->isAdministrator() || $user->can_current_user_view_work_fields) {

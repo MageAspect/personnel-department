@@ -48,7 +48,6 @@ class CareerJournalStore
             throw new CareerJournalException(
                 'Не удалось добавить запись в журнал', 0, $e);
         }
-
     }
 
     /**

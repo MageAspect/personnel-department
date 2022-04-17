@@ -51,17 +51,17 @@
                         link: `/users/${user.id}/`,
                         classes: ['hover:text-gray-light']
                     },
-                    {
+                    user.canBeUpdated ? {
                         text: 'Редактировать',
                         link: `/users/${user.id}/edit`,
                         classes: ['hover:text-green']
-                    },
-                    {
+                    } : null,
+                    user.canBeDeleted ? {
                         text: 'Удалить',
                         clickHandler: this.deleteUser.bind(this, user.id),
                         classes: ['hover:text-red']
-                    }
-                ]"/>
+                    } : null
+                ].filter(item => item !== null)"/>
                 <grid-row-cell>{{ user.id }}</grid-row-cell>
                 <grid-row-cell>{{ user.lastName }}</grid-row-cell>
                 <grid-row-cell>{{ user.name }}</grid-row-cell>
@@ -128,7 +128,7 @@ export default {
             findUserCanselToken: null,
 
             pagination: {
-                recordsPerPage: 15,
+                recordsPerPage: 10,
                 recordsTotalCount: 1,
                 currentPage: 1
             }

@@ -35,7 +35,10 @@ class UserController extends Controller
 
     public function index(): View
     {
-        return view('users.list');
+        return view(
+            'users.list',
+            array('canStore' => $this->userStore->canStore())
+        );
     }
 
     public function create(): View
@@ -210,6 +213,8 @@ class UserController extends Controller
     }
 
     protected function uploadAvatar(UploadedFile $avatar): string {
-        return $avatar->storePublicly('avatars', array('disk' => 'public'));
+        $avatar->storePublicly('avatars', array('disk' => 'public'));
+
+        return $avatar->hashName();
     }
 }

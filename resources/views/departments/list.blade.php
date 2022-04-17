@@ -16,10 +16,12 @@
             <i class="text-gray-dark fas fa-layer-group"></i>
         </template>
         <template v-slot:buttons>
-            <a href="{{ route('departments.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i>
-                <span>Добавить</span>
-            </a>
+            @if($canStore)
+                <a href="{{ route('departments.create') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    <span>Добавить</span>
+                </a>
+            @endIf
         </template>
         <template v-slot:search>
             <form class="group relative ml-6" method="get">
