@@ -73,7 +73,4 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
 });
 
-Route::middleware(['auth'])->prefix('/admin')->group(function () {
-//    Route::get('/sql-query', )
-});
 
