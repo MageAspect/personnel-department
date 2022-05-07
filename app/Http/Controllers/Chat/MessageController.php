@@ -16,7 +16,7 @@ class MessageController extends Controller
 
     public function show(int $messageId)
     {
-
+        \App\Events\ChatMessageStored::dispatch($messageId);
     }
 
     public function store(int $chatId)
