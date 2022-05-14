@@ -17,7 +17,7 @@
     </page-header>
 
     <page-body ref="pageBody" class="vld-parent">
-        <template v-if="userId > 0">
+        <template v-if="userId ">
             <transition name="fade">
                 <loading v-model:active="isUserLoading"
                          :is-full-page="false"
@@ -72,7 +72,7 @@ export default {
             type: Boolean,
             default: false
         },
-        userId: Number,
+        userId: String,
     },
 
     data() {
@@ -101,7 +101,7 @@ export default {
 
     methods: {
         isEditMode() {
-            return this.editMode && this.userId > 0;
+            return this.editMode && this.userId;
         },
 
         isCreateMode() {

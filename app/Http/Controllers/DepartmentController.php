@@ -41,7 +41,7 @@ class DepartmentController extends Controller
         );
     }
 
-    public function show(int $id, DepartmentStore $departmentStore): View
+    public function show(string $id, DepartmentStore $departmentStore): View
     {
         try {
             $d = $departmentStore->findById($id);
@@ -52,7 +52,7 @@ class DepartmentController extends Controller
         return view('departments.show', array('department' => $d));
     }
 
-    public function edit(int $id, DepartmentStore $departmentStore): View
+    public function edit(string $id, DepartmentStore $departmentStore): View
     {
         try {
             if (!$departmentStore->canUpdate($id)) {
@@ -68,8 +68,8 @@ class DepartmentController extends Controller
 
 
     public function update(
-        int $id,
         DepartmentEditRequest $request,
+        string $id,
         DepartmentStore $departmentStore
     ): JsonResponse|Response {
         $department = $this->createFromRequest($request);
@@ -115,7 +115,7 @@ class DepartmentController extends Controller
         }
     }
 
-    public function destroy(int $id, DepartmentStore $departmentStore): RedirectResponse
+    public function destroy(string $id, DepartmentStore $departmentStore): RedirectResponse
     {
         try {
             $departmentStore->delete($id);
@@ -126,7 +126,7 @@ class DepartmentController extends Controller
         return back();
     }
 
-    public function findUserDepartments(DepartmentStore $departmentStore, int $userId): JsonResponse
+    public function findUserDepartments(DepartmentStore $departmentStore, string $userId): JsonResponse
     {
         try {
             $departments = $departmentStore->findUserDepartments($userId);

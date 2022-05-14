@@ -11,7 +11,6 @@ use App\Models\CareerJournal;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 
 class CareerJournalStore
@@ -26,25 +25,24 @@ class CareerJournalStore
     /**
      * @throws CareerJournalException
      */
-    public function addRecord(int $userId, int $salary, string $position,  ?int $departmentId = null): void
+    public function addRecord(string $userId, int $salary, string $position,  ?string $departmentId = null): void
     {
         try {
             $newRecord = array(
                 'user_id' => $userId,
                 'salary' => $salary,
                 'position' => $position,
+                'started_at' => Carbon::now(),
+                'ended_at' => null,
             );
 
             if ($departmentId) {
                 $newRecord['department_id'] = $departmentId;
             }
 
-            DB::beginTransaction();
             $this->markAsEndedActiveRecords($userId);
             $this->careerJournal::create($newRecord);
-            DB::commit();
         } catch (Exception $e) {
-            DB::rollBack();
             throw new CareerJournalException(
                 'Не удалось добавить запись в журнал', 0, $e);
         }
@@ -53,7 +51,7 @@ class CareerJournalStore
     /**
      * @throws CareerJournalException
      */
-    public function findJournal(int $userId, bool $salaryCanBeViewed = false): Collection
+    public function findJournal(string $userId, bool $salaryCanBeViewed = false): Collection
     {
         try {
             $records = $this->careerJournal::query()
@@ -87,7 +85,7 @@ class CareerJournalStore
     /**
      * @throws CareerJournalException
      */
-    protected function markAsEndedActiveRecords(int $userId): void
+    protected function markAsEndedActiveRecords(string $userId): void
     {
         try {
             $this->careerJournal::query()
@@ -95,7 +93,7 @@ class CareerJournalStore
                 ->whereNull('ended_at')
                 ->update(
                     array(
-                        'ended_at' => Carbon::now()
+                        'ended_at' => $this->careerJournal->freshTimestamp()
                     )
                 );
         } catch (Exception $e) {

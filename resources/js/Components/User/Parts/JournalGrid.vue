@@ -78,8 +78,14 @@ export default {
          * @return {string|null}
          */
         getFormattedEndedAt(endedAt) {
-            return endedAt ? `${endedAt.getDate()}.${endedAt.getUTCMonth()}.${endedAt.getUTCFullYear()}`
-                : 'До сих пор в должности';
+            if (!endedAt) {
+                return 'До сих пор в должности';
+            }
+
+            let month = endedAt.getUTCMonth() + 1;
+            month = month < 10 ? `0${month}` : month;
+
+            return `${endedAt.getDate()}.${month}.${endedAt.getUTCFullYear()}`;
         }
     },
 }

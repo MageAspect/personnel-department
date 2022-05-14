@@ -47,12 +47,12 @@ class UserController extends Controller
 
     }
 
-    public function show(int $id): View
+    public function show(string $id): View
     {
         return view('users.show', array('userId' => $id));
     }
 
-    public function edit(int $id): View
+    public function edit(string $id): View
     {
         return view('users.edit', array('userId' => $id));
     }
@@ -87,7 +87,7 @@ class UserController extends Controller
         return response()->noContent();
     }
 
-    public function destroy(int $id): JsonResponse|Response
+    public function destroy(string $id): JsonResponse|Response
     {
         try {
             $this->userStore->delete($id);
@@ -126,7 +126,7 @@ class UserController extends Controller
         }
     }
 
-    public function findById(int $id): Response|JsonResponse {
+    public function findById(string $id): Response|JsonResponse {
         try {
             return $this->jsonResponse($this->userStore->findById($id));
         } catch (UserNotFoundException) {
@@ -136,7 +136,7 @@ class UserController extends Controller
         }
     }
 
-    public function findUserCareerJournal(CareerJournalStore $journalStore, int $userId): JsonResponse {
+    public function findUserCareerJournal(CareerJournalStore $journalStore, string $userId): JsonResponse {
         try {
             $user = $this->userStore->findById($userId);
             $journal = $journalStore->findJournal($userId, $user->salaryCanBeViewed);
@@ -186,7 +186,7 @@ class UserController extends Controller
         $user = new UserEntity();
 
         $userId = $request->route()->parameter('id');
-        if ($userId > 0) {
+        if ($userId) {
             $user = $this->userStore->findById($userId);
         }
 

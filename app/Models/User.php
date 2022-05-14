@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Jenssegers\Mongodb\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -13,6 +13,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    protected $collection = 'users';
 
     /**
      * The attributes that are mass assignable.
@@ -52,7 +53,7 @@ class User extends Authenticatable
 
     public function headOf()
     {
-        return$this->hasOne(Department::class, 'head_id');
+        return $this->hasOne(Department::class, 'head_id');
     }
 
     public function isAdministrator(): bool
@@ -67,14 +68,14 @@ class User extends Authenticatable
         $probablyName = !empty($names[0]) ? $names[0] : '';
         $probablyLastName = !empty($names[1]) ? $names[1] : '';
 
-        return $query->where(function ($query) use ($probablyName, $probablyLastName) {
-            $query->orWhere(function ($query) use ($probablyName, $probablyLastName) {
-                $query->where('name', 'ilike', "%$probablyName%");
-                $query->where('last_name', 'ilike', "%$probablyLastName%");
+        return $query->where(function (Builder $query) use ($probablyName, $probablyLastName) {
+            $query->orWhere(function (Builder $query) use ($probablyName, $probablyLastName) {
+                $query->where('name', 'regexp',"/$probablyName/");
+                $query->where('last_name', 'regexp',"/$probablyLastName/");
             });
             $query->orWhere(function ($query) use ($probablyName, $probablyLastName) {
-                $query->where('last_name', 'ilike', "%$probablyName%");
-                $query->where('name', 'ilike', "%$probablyLastName%");
+                $query->where('last_name','regexp', "/$probablyName/");
+                $query->where('name', 'regexp',"/$probablyLastName/");
             });
         });
     }

@@ -66,7 +66,7 @@ export default {
     data() {
         return {
             department: {
-                id: 0,
+                id: '',
                 name: '',
                 description: '',
                 head: new User(),

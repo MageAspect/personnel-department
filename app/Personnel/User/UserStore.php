@@ -34,10 +34,10 @@ class UserStore
     /**
      * @throws UserStoreException
      */
-    public function findById(int $id): UserEntity
+    public function findById(string $id): UserEntity
     {
-        $user = $this->findUsers(array('id' => $id))
-            ->first(fn(UserEntity $user) => $user->id === $id);
+        $user = $this->findUsers(array('_id' => $id))
+            ->first();
 
         if (!$user) {
             throw new UserNotFoundException();
@@ -46,7 +46,7 @@ class UserStore
     }
 
     /**
-     * @param  array{find: string, id: int|array, excludedIds: array}  $filter
+     * @param  array{find: string, id: string|array, excludedIds: array}  $filter
      * @param  array{id: string, name: string, lastName: string, patromunic:string, email: string, salary: string}  $sort
      *         - значение каждого ключа - asc или desc
      * @param  int  $offset
@@ -60,22 +60,6 @@ class UserStore
             $q = $this->currentUser::query();
 
             $q->select('*');
-
-            $selectSql = '
-                CASE
-                    WHEN (
-                        SELECT count(*) > 0
-                        FROM departments
-                            INNER JOIN user_department ud on departments.id = ud.department_id
-                        WHERE users.id = ud.user_id
-                            AND departments.head_id = ?
-                    ) THEN TRUE
-                    WHEN users.id = ? THEN TRUE
-                    ELSE FALSE
-                END as can_current_user_view_work_fields
-            ';
-
-            $q->selectRaw($selectSql, array($this->currentUser->id, $this->currentUser->id));
 
             $this->applyFindFilters($q, $filter);
 
@@ -103,7 +87,7 @@ class UserStore
     }
 
     /**
-     * @param  array{find: string, id: int|array, excludedIds: array}  $filter
+     * @param  array{find: string, id: string|array, excludedIds: array}  $filter
      * @return int
      * @throws UserStoreException
      */
@@ -112,11 +96,11 @@ class UserStore
         try {
             $q = $this->currentUser::query();
 
-            $q->selectRaw('count(*) as count');
+            $q->count();
 
             $this->applyFindFilters($q, $filter);
 
-            return  $q->first()->count;
+            return  $q->get()?->count() ?? 0;
         } catch (Exception $e) {
             throw new UserStoreException('Failed to find users count', 0, $e);
         }
@@ -160,7 +144,7 @@ class UserStore
         return $this->currentUser->can('store', User::class);
     }
 
-    public function canUpdate(int $id): bool
+    public function canUpdate(string $id): bool
     {
         try {
             $userToUpdate = $this->currentUser::query()
@@ -175,7 +159,7 @@ class UserStore
     /**
      * @throws CareerJournalException
      */
-    public function store(UserEntity $userToStore, string $password): int
+    public function store(UserEntity $userToStore, string $password): string
     {
         if (!$this->currentUser->can('store', User::class)) {
             throw new UnauthorizedException();
@@ -197,7 +181,7 @@ class UserStore
     /**
      * @throws UserStoreException
      */
-    public function delete(int $id): void
+    public function delete(string $id): void
     {
         try {
             $user = $this->currentUser::query()->findOrFail($id);
@@ -215,7 +199,7 @@ class UserStore
     /**
      * @throws UserNotFoundException
      */
-    public function isCorrectPassword(int $userId, string $password): bool {
+    public function isCorrectPassword(string $userId, string $password): bool {
         try {
             $user = $this->currentUser::query()
                 ->findOrFail($userId);
@@ -226,13 +210,13 @@ class UserStore
         return Hash::check($password, $user->password);
     }
 
-    public function isUniqueEmail(int $userId, string $email): bool {
+    public function isUniqueEmail(string $userId, string $email): bool {
 
         $q = $this->currentUser::query()
             ->select('email')
             ->where('email', $email);
         if ($userId > 0) {
-            $q->where('id', '!=', $userId);
+            $q->where('_id', '!=', $userId);
         }
 
         return !$q->first();
@@ -241,7 +225,7 @@ class UserStore
     protected function createUserEntity(User $user): UserEntity
     {
         $userEntity = new UserEntity();
-        $userEntity->id = (int) $user->id;
+        $userEntity->id = (string) $user->id;
         $userEntity->name = (string) $user->name;
         $userEntity->lastName = (string) $user->last_name;
         $userEntity->patronymic = (string) $user->patronymic;
@@ -272,13 +256,13 @@ class UserStore
         }
 
         if (isset($filter['excludedIds'])) {
-            $query->whereNotIn('id', $filter['excludedIds']);
+            $query->whereNotIn('_id', $filter['excludedIds']);
             unset($filter['excludedIds']);
         }
 
-        if (isset($filter['id'])) {
-            is_array($filter['id']) ? $query->whereIn('id', $filter['id'])
-                : $query->where('id', $filter['id']);
+        if (isset($filter['_id'])) {
+            is_array($filter['_id']) ? $query->whereIn('_id', $filter['_id'])
+                : $query->where('_id', $filter['_id']);
         }
     }
 

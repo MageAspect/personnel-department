@@ -12,7 +12,7 @@ class UserUpdateRequest extends FormRequest
     use JsonAnswerOnFail;
 
     private UserStore $userStore;
-    private int $userId;
+    private string $userId;
 
     public function authorize(): bool
     {

@@ -1,5 +1,7 @@
 <?php
 
+use Jenssegers\Mongodb\MongodbServiceProvider;
+
 return [
 
     /*
@@ -166,6 +168,8 @@ return [
          * Package Service Providers...
          */
 
+        MongodbServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -174,7 +178,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
     ],
 
     /*

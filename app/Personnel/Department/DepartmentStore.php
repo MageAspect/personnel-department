@@ -66,7 +66,7 @@ class DepartmentStore
     /**
      * @throws DepartmentStoreException
      */
-    public function findUserDepartments(int $userId): Collection {
+    public function findUserDepartments(string $userId): Collection {
         try {
             $q = $this->department::query();
             $q->select('*');
@@ -89,12 +89,12 @@ class DepartmentStore
     /**
      * @throws DepartmentStoreException
      */
-    public function findById(int $id): DepartmentEntity
+    public function findById(string $id): DepartmentEntity
     {
         try {
             $department = $this->department::with(['head', 'members'])
                 ->select('*')
-                ->where('id', $id)
+                ->where('_id', $id)
                 ->first();
 
             if (!$department) {
@@ -102,14 +102,14 @@ class DepartmentStore
             }
 
             $d = new DepartmentEntity();
-            $d->id = (int) $department->id;
+            $d->id = (string) $department->id;
             $d->name = (string) $department->name;
             $d->description = (string) $department->description;
             $d->head = $this->userStore->findById($department->head_id);
 
             $membersIds = array_map(fn($user) => $user->id, $department->members->all());
 
-            $d->members = $this->userStore->findUsers(array('id' => $membersIds))->all();
+            $d->members = $this->userStore->findUsers(array('_id' => $membersIds))->all();
 
             return $d;
         } catch (Exception $e) {
@@ -120,7 +120,7 @@ class DepartmentStore
     /**
      * @throws DepartmentStoreException
      */
-    public function canUpdate(int $id): bool
+    public function canUpdate(string $id): bool
     {
         try {
             $d = $this->department::query()->findOrFail($id);
@@ -138,7 +138,7 @@ class DepartmentStore
     /**
      * @throws DepartmentStoreException
      */
-    public function canDelete(int $id): bool
+    public function canDelete(string $id): bool
     {
         try {
             $d = $this->department::query()->findOrFail($id);
@@ -200,7 +200,7 @@ class DepartmentStore
      * @throws DepartmentStoreException
      * @throws UnauthorizedException
      */
-    public function delete(int $id): void
+    public function delete(string $id): void
     {
         if (!$this->canDelete($id)) {
             throw new UnauthorizedException('Недостаточно прав для удаления отдела');
@@ -223,7 +223,7 @@ class DepartmentStore
      * @throws DepartmentStoreException
      * @throws UnauthorizedException
      */
-    public function store(DepartmentEntity $departmentEntity): int
+    public function store(DepartmentEntity $departmentEntity): string
     {
         if (!$this->canStore()) {
             throw new UnauthorizedException('Недостаточно прав для добавления отдела');
@@ -254,10 +254,10 @@ class DepartmentStore
         $departmentsEntities = array();
         foreach ($departments as $department) {
             $d = new DepartmentEntity();
-            $d->id = (int) $department->id;
+            $d->id = (string) $department->id;
             $d->name = (string) $department->name;
             $d->description = (string) $department->description;
-            $d->head->id = (int) $department->head_id;
+            $d->head->id = (string) $department->head_id;
 
             $d->canBeUpdated = $this->currentUser->can('update', $department);
             $d->canBeDeleted = $this->currentUser->can('delete', $department);
@@ -268,7 +268,7 @@ class DepartmentStore
         $heads = array();
         $headsIds = array_map(fn(DepartmentEntity $department) => $department->head->id, $departmentsEntities);
         if (!empty($headsIds)) {
-            $heads = $this->userStore->findUsers(array('id' => $headsIds));
+            $heads = $this->userStore->findUsers(array('_id' => $headsIds));
         }
 
         foreach ($heads as $head) {

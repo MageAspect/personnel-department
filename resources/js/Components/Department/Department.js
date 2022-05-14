@@ -1,7 +1,7 @@
 import {User} from "../User/User.js";
 
 export class Department {
-    /** @type {Number} */
+    /** @type {String} */
     id;
     /** @type {String} */
     name;
@@ -18,10 +18,10 @@ export class Department {
         d.name = obj.name;
         d.description = obj.description;
         d.head = User.fromJson(obj.head);
+        console.log(d.head);
 
         d.members = [];
         for (let memberObj of Object.values(obj.members)) {
-            console.log(memberObj);
             d.members.push(User.fromJson(memberObj));
         }
 

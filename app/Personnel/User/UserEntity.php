@@ -9,7 +9,7 @@ namespace App\Personnel\User;
 
 class UserEntity
 {
-    public ?int $id = null;
+    public ?string $id = null;
     public ?string $email = null;
     public ?string $name = null;
     public ?string $lastName = null;

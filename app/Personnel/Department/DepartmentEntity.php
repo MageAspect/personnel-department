@@ -12,7 +12,7 @@ use App\Personnel\User\UserEntity;
 
 class DepartmentEntity
 {
-    public ?int $id = null;
+    public ?string $id = null;
     public string $name = '';
     public string $description = '';
     public UserEntity $head;

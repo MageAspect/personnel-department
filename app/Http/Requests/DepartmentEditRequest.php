@@ -31,7 +31,6 @@ class DepartmentEditRequest extends FormRequest
             'headId' => ['required'],
             'name' => ['required', 'min:3', 'max:100'],
             'description' => ['required', 'min:20', 'max:1000'],
-            'membersIds' => ['numericArray']
         ];
     }
 }

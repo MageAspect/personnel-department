@@ -246,8 +246,8 @@ export default {
 
             this.saveDisabled = true;
             axios({
-                method: this.department.id > 0 ? 'put' : 'post',
-                url: this.department.id > 0 ? `/departments/${this.department.id}` : '/departments',
+                method: this.department.id ? 'put' : 'post',
+                url: this.department.id ? `/departments/${this.department.id}` : '/departments',
                 data: {
                     headId: this.department.head.id,
                     membersIds: this.department.members.map(member => member.id),
@@ -256,7 +256,7 @@ export default {
                 }
             })
                 .then((response) => {
-                    if (this.department.id > 0) {
+                    if (this.department.id) {
                         location.href = `/departments/${this.department.id}`
                     } else {
                         location.href = `/departments/${response.data.id}`

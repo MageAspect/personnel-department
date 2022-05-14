@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
 
          Department::factory(9)->create();
 
-         $email = User::query()->find(1)->email;
+         $email = User::query()->first()->email;
          echo "\nДоступы админа: $email, пароль password \n\n";
     }
 }

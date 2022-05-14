@@ -35,7 +35,7 @@
                         />
                     </transition>
                 </profile-block>
-                <profile-block v-if="userId > 0" title="Состоит в отделах:">
+                <profile-block v-if="userId" title="Состоит в отделах:">
                     <div class="max-h-72 overflow-y-scroll ui-y-scroll">
                         <department-preview v-for="department of userDepartments" :department="department"/>
                     </div>
@@ -118,8 +118,8 @@
                            message="Телефон заполнен не полностью"/>
                 </profile-block>
 
-                <profile-block v-if="editMode" :title="userId > 0 ? 'Смена пароля' : 'Пароль'">
-                    <template v-if="userId > 0">
+                <profile-block v-if="editMode" :title="userId ? 'Смена пароля' : 'Пароль'">
+                    <template v-if="userId">
                         <named-field :edit-mode="true" class="mt-5" name="Текущий пароль" type="password"
                                      v-model:value="currentPassword"/>
                         <error v-if="v$.currentPassword.$dirty && v$.currentPassword.requiredIf.$invalid"
@@ -149,7 +149,7 @@
                            message="Пароли не совпадают"/>
                 </profile-block>
 
-                <profile-block v-if="userId > 0" class="mb-0" title="Журнал продвижения по службе">
+                <profile-block v-if="userId" class="mb-0" title="Журнал продвижения по службе">
                     <journal-grid class="pt-3" :entries="careerJournal" :display-salary="user.salaryCanBeViewed"/>
                 </profile-block>
             </div>
@@ -193,7 +193,7 @@ export default {
             type: Boolean,
             required: true
         },
-        userId: Number
+        userId: String
     },
     emits: ['profileLoad'],
 
@@ -273,7 +273,7 @@ export default {
              }
          };
 
-         if (this.user.salaryCanBeViewed || this.user.id <= 0) {
+         if (this.user.salaryCanBeViewed || !this.user.id) {
              rules.user.salary = {
                  required,
                  minValue: minValue(1),
@@ -353,7 +353,7 @@ export default {
             }
 
             axios.post(
-                this.userId > 0 ? `/users/${this.userId}` : '/users',
+                this.userId ? `/users/${this.userId}` : '/users',
                 formData
             )
                 .then((response) => {
